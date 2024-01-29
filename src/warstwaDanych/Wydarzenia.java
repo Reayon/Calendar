@@ -106,7 +106,7 @@ public class Wydarzenia implements Comparable<Wydarzenia> {
 	
 	public String toString() {
 
-		return nazwa + " " + miejsce + " " + data + " " + godzina +" "+ getKontakty();
+		return nazwa + " " + miejsce + " " + data + " " + godzina + " " + id +" "+ getKontakty();
 	}
 
 	public int compareTo(Wydarzenia w) {

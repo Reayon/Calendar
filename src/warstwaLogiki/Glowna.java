@@ -1,9 +1,11 @@
 package warstwaLogiki;
 
+import java.io.FileNotFoundException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import javafx.application.Application;
 import warstwaDanych.Kontakt;
 import warstwaDanych.Wydarzenia;
 import warstwaInterfejsUzytkownika.consoleUI;
@@ -14,47 +16,40 @@ public class Glowna {
 	public static Scanner sc = new Scanner(System.in).useDelimiter("\n");
 	public static Scanner sc1 = new Scanner(System.in);
 	
-	public static void main(String[] args) throws SQLException{
-		
+	public static void main(String[] args) throws SQLException, FileNotFoundException{
+		launch(args);
 		ArrayList<Kontakt> kontakty = new ArrayList<Kontakt>();
 		ArrayList<Wydarzenia> wydarzenia = new ArrayList<Wydarzenia>();
 		
-		dbManager db = new dbManager();
 		//XML xml = new XML();
-		
-		db.odczytajKontakty(kontakty);
-		db.odczytajWydarzenia(wydarzenia);
-		db.polaczAssign(kontakty, wydarzenia);
 		
 		dataManager dm = new dataManager(kontakty, wydarzenia);
 		
-		consoleUI c = new consoleUI(dm);
+		dm.odczytajDane();
 		
-		graphicUI gui = new graphicUI(dm);
+		consoleUI cui = new consoleUI(dm);
+		
+		//graphicUI gui = new graphicUI();
 		
 		while(true) {
-			System.out.println("Wybierz skąd chcesz pobrać dane: ");
-			System.out.println("1 Baza danych");
-			System.out.println("2 Plik XML");
+			System.out.println("Wybierz interfejs: ");
+			System.out.println("1 Konsolowy");
+			System.out.println("2 Graficzny");
 			
 			int wybor = sc1.nextInt();
 			switch(wybor) {
 			case 1:
-				System.out.println("Wybierz interfejs: ");
-				System.out.println("1 Konsolowy");
-				System.out.println("2 Graficzny");
+				cui.showCUI(sc);
 				wybor = sc1.nextInt();
-					switch(wybor) {
-						case 1:
-							c.showCUI(sc);
-							break;
-						case 2:
-							gui.showGUI();
-							break;
-					} break;
 			case 2:
+				Application.launch(graphicUI.class,args);
 				System.out.println("Nie działa");
 			}
 		}
+	}
+
+	private static void launch(String[] args) {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -85,7 +85,7 @@ public class Kontakt implements Comparable<Kontakt> {
 	}
 
 	public String toString() {
-		return imie + " " + nazwisko + " " + Integer.toString(nr_tel) + " " + email;
+		return imie + " " + nazwisko + " " + Integer.toString(nr_tel) + " " + email + " id: " +id;
 	}
 	
 	public String toStringZWydarzeniem() {
@@ -99,9 +99,7 @@ public class Kontakt implements Comparable<Kontakt> {
 				if(this.nazwisko.equals(k.nazwisko)) {
 					if(this.nr_tel == k.nr_tel) {
 						if(this.email.equals(k.email)) {
-							if(this.id == k.id) {
-								return true;
-							}
+							return true;
 						}
 					}
 				}

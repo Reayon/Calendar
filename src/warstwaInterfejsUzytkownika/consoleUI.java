@@ -1,9 +1,11 @@
 package warstwaInterfejsUzytkownika;
 
+import java.io.FileNotFoundException;
 import java.sql.SQLException;
 
 import java.util.Scanner;
 
+import warstwaLogiki.bufor;
 import warstwaLogiki.dataManager;
 
 public class consoleUI {
@@ -14,8 +16,9 @@ public class consoleUI {
 		this.dm = dm;
 	}
 	
-	public void showCUI(Scanner sc) throws SQLException{
+	public void showCUI(Scanner sc) throws SQLException, FileNotFoundException{
 		Scanner sc1 = new Scanner(System.in);
+		Scanner skaner = new Scanner(System.in).useDelimiter("\n");;
 		
 		while(true)
 		{
@@ -29,6 +32,9 @@ public class consoleUI {
 		System.out.println("7 Edytuj wydarzenia");
 		System.out.println("8 Posortuj wydarzenia");
 		System.out.println("9 Przypisanie kontaktu do wydarzenia");
+		System.out.println("10 Pliczek");
+		System.out.println("11 Odczyt");
+		System.out.println("12 Czysc");
 		System.out.println("0 Wyjdz");
 		
 		int wybor1 = sc1.nextInt();
@@ -60,7 +66,7 @@ public class consoleUI {
 			switch(wybor1) {
 				case 1:
 					System.out.println(dm.wyswietlKontakty());
-					System.out.println("Który kontakt chcesz usunąć?");
+					System.out.println("Który kontakt chcesz zedytowac?");
 					wybor1 = sc1.nextInt();
 					System.out.println("Podaj imie");
 					String imie1 = sc.next();
@@ -107,8 +113,8 @@ public class consoleUI {
 			wybor1 = sc1.nextInt();
 			switch(wybor1) {
 			case 1:
-				System.out.println(dm.wyswietlWydarzenia());
-				System.out.println("Który kontakt chcesz usunąć?");
+				System.out.println(dm.wyswietlKontakty());
+				System.out.println("Który wydarzenie chcesz zedytowac?");
 				wybor1 = sc1.nextInt();
 				System.out.println("Podaj nazwe wydarzenia");
 				String nazwa1 = sc.next();
@@ -139,6 +145,20 @@ public class consoleUI {
 			System.out.println("Podaj nr id wydarzenia");
 			int nr2 = sc1.nextInt();
 			dm.assignKontaktToWydarzenia(nr1, nr2);
+			break;
+		case 10:
+			bufor buforek = new bufor();
+			System.out.println("Napisz coś");
+			String zapisSkanera = skaner.next();
+			buforek.zapisZapytan(zapisSkanera);
+			break;
+		case 11:
+			bufor buforek1 = new bufor();
+			buforek1.odczytZapytan();
+			break;
+		case 12:
+			bufor buforek2 = new bufor();
+			buforek2.czyscPlik();
 			break;
 		case 0: 
 			System.out.println("Do widzenia");

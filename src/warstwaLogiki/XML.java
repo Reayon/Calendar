@@ -22,7 +22,7 @@ public class XML {
 	public void zapisKontaktowDoXML(ArrayList<Kontakt> kontakt) {
 		try {
 			XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newInstance();
-			XMLStreamWriter writer = xmlOutputFactory.createXMLStreamWriter(new FileOutputStream("./Kontakty.xml"), "utf-8");
+			XMLStreamWriter writer = xmlOutputFactory.createXMLStreamWriter(new FileOutputStream("./src/Kontakty.xml"), "utf-8");
 			
 			writer.writeStartDocument("1.0");
 			
@@ -81,7 +81,7 @@ public class XML {
 	public void odczytKontaktowXML(ArrayList<Kontakt> kontakt)
 	{
 		try {
-			InputStream in = new FileInputStream("./Kontakty.xml");
+			InputStream in = new FileInputStream("./src/Kontakty.xml");
 				
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -120,7 +120,7 @@ public class XML {
 	public void zapisWydarzeniaDoXML(ArrayList<Wydarzenia> wydarzenia) {
 		try {
 			XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newInstance();
-			XMLStreamWriter writer = xmlOutputFactory.createXMLStreamWriter(new FileOutputStream("./Wydarzenia.xml"), "utf-8");
+			XMLStreamWriter writer = xmlOutputFactory.createXMLStreamWriter(new FileOutputStream("./src/Wydarzenia.xml"), "utf-8");
 			
 			writer.writeStartDocument("1.0");
 			
@@ -173,7 +173,7 @@ public class XML {
 	public void odczytWydarzenXML(ArrayList<Wydarzenia> wydarzenia)
 	{
 		try {
-			InputStream in = new FileInputStream("./Wydarzenia.xml");
+			InputStream in = new FileInputStream("./src/Wydarzenia.xml");
 		    DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 		    DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 		    try {

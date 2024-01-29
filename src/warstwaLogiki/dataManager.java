@@ -1,5 +1,6 @@
 package warstwaLogiki;
 
+import java.io.FileNotFoundException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,12 +9,36 @@ import warstwaDanych.Kontakt;
 import warstwaDanych.Wydarzenia;
 
 public class dataManager {
+	
+	private XML xml = new XML();
+	private dbManager db = new dbManager();
 	private ArrayList<Kontakt> kontakty = new ArrayList<Kontakt>();
 	private ArrayList<Wydarzenia> wydarzenia = new ArrayList<Wydarzenia>();
 	
 	public dataManager(ArrayList<Kontakt> kontakty, ArrayList<Wydarzenia> wydarzenia) {
 		this.kontakty = kontakty;
 		this.wydarzenia = wydarzenia;
+	}
+	
+	public void wykonajZBufora() throws FileNotFoundException {
+		if(db.getLicznikZapytan() > 10) {
+			db.wykonajZapytania();
+			db.wyzerujLicznikZapytan();
+		}
+	}
+	
+	public void odczytajDane() throws SQLException, FileNotFoundException {
+		if(db.czyPolaczone()) {
+			if(db.getBufor().isEmpty()==false) {
+			db.wykonajZapytania();
+			db.odczytajKontakty(kontakty);
+			db.odczytajWydarzenia(wydarzenia);
+			db.polaczAssign(kontakty, wydarzenia);
+			}
+		} else {
+			xml.odczytKontaktowXML(kontakty);
+			xml.odczytWydarzenXML(wydarzenia);
+		}
 	}
 	
 	public String wyswietlKontakty() throws SQLException {
@@ -55,56 +80,50 @@ public class dataManager {
 	}
 	
 	public void addKontakt(String imie, String nazwisko, int numer, String email) throws SQLException {
-		dbManager db = new dbManager();
-		//XML xml = new XML();
 		
 		if(equalsArrayListKontakty(new Kontakt(imie, nazwisko, numer, email))==false) {
 			Kontakt kon = new Kontakt(imie, nazwisko, numer, email);
 			db.dodajKontakt(kontakty, kon);
 			kontakty.add(kon);
-			//xml.zapisKontaktowDoXML(kontakty);
+			xml.zapisKontaktowDoXML(kontakty);
 		} else {
 			System.out.println("Taki kontakt już istnieje");
 		}
 	}
 	
 	public void editKontakt(String imie, String nazwisko, int numer, String email, int nr) throws SQLException {
-		dbManager db = new dbManager();
-		//XML xml = new XML();
-		
+
 		kontakty.get(nr-1).setImie(imie);
 		kontakty.get(nr-1).setNazwisko(nazwisko);
 		kontakty.get(nr-1).setNr(numer);
 		kontakty.get(nr-1).setEmail(email);
 		
 		db.edytujKontakt(kontakty.get(nr-1));
-		//xml.zapisKontaktowDoXML(kontakty);
+		xml.zapisKontaktowDoXML(kontakty);
 		
 		System.out.println("Pomyślnie edytowano kontakt");
 	}
 	
 	public void removeKontakt(int nr) throws SQLException {
-		dbManager db = new dbManager();
-		//XML xml = new XML();
 		
-		db.usunAssignKontakt(kontakty.get(nr-1));
 		db.usunKontakt(kontakty.get(nr-1));
-		wydarzenia.get(kontakty.get(nr-1).getWydarzenie().getID()).dropEqualKontakt(kontakty.get(nr-1));
+		if(kontakty.get(nr-1).getWydarzenie()!=null) {
+			db.usunAssignKontakt(kontakty.get(nr-1));
+			wydarzenia.get(kontakty.get(nr-1).getWydarzenie().getID()).dropEqualKontakt(kontakty.get(nr-1));
+		}
 		kontakty.remove(nr-1);
-		//xml.zapisWydarzeniaDoXML(wydarzenia);
+		xml.zapisKontaktowDoXML(kontakty);
 		
-		System.out.println("Pomyślnie edytowano kontakt");
+		System.out.println("Pomyślnie usunięto kontakt");
 	}
 	
 	public void addWydarzenie(String nazwa, String miejsce, String data, String godzina) throws SQLException {
-		dbManager db = new dbManager();
-		//XML xml = new XML();
 		
 		if(equalsArrayListWydarzenia(new Wydarzenia(nazwa, miejsce, data, godzina))==false) {
 			Wydarzenia wo = new Wydarzenia(nazwa, miejsce, data, godzina);
 			db.dodajWydarzenie(wydarzenia, wo);
 			wydarzenia.add(wo);
-			//xml.zapisWydarzeniaDoXML(wydarzenia);
+			xml.zapisWydarzeniaDoXML(wydarzenia);
 			
 		} else {
 			System.out.println("Takie wydarzenie już istnieje");
@@ -112,8 +131,6 @@ public class dataManager {
 	}
 	
 	public void editWydarzenie(String nazwa, String miejsce, String data, String godzina, int nr) throws SQLException {
-		dbManager db = new dbManager();
-		//XML xml = new XML();
 		
 		wydarzenia.get(nr-1).setNazwa(nazwa);
 		wydarzenia.get(nr-1).setMiejsce(miejsce);
@@ -121,33 +138,29 @@ public class dataManager {
 		wydarzenia.get(nr-1).setGodzina(godzina);
 		
 		db.edytujWydarzenie(wydarzenia.get(nr-1));
-		//xml.zapisWydarzeniaDoXML(wydarzenia);
+		xml.zapisWydarzeniaDoXML(wydarzenia);
 		
-		System.out.println("Pomyślnie edytowano kontakt");
+		System.out.println("Pomyślnie edytowano wydarzenie");
 	}
 	
 	public void removeWydarzenie(int nr) throws SQLException {
-		dbManager db = new dbManager();
-		//XML xml = new XML();
 		
 		db.usunAssignWydarzenie(wydarzenia.get(nr-1));
 		db.usunWydarzenie(wydarzenia.get(nr-1));
 		for(int i=0;i<kontakty.size();i++) {
-			for(int j=0;j<wydarzenia.get(nr-1).getKontaktySize();j++) {
-				if(kontakty.get(i).equals(wydarzenia.get(nr-1).getExactKontakt(j))) {
-					kontakty.get(i).dropWydarzenie();
-				}
-			}
-		}
+            for(int j=0;j<wydarzenia.get(nr-1).getKontaktySize();j++) {
+                if(kontakty.get(i).equals(wydarzenia.get(nr-1).getExactKontakt(j))) {
+                    kontakty.get(i).dropWydarzenie();
+                }
+            }
+        }
 		wydarzenia.remove(nr-1);
-		//xml.zapisWydarzeniaDoXML(wydarzenia);
+		xml.zapisWydarzeniaDoXML(wydarzenia);
 		
-		System.out.println("Pomyślnie edytowano kontakt");
+		System.out.println("Pomyślnie edytowano wydarzenie");
 	}
 	
 	public void assignKontaktToWydarzenia(int nr1, int nr2) throws SQLException {
-		dbManager db = new dbManager();
-		//XML xml = new XML();
 		
 		kontakty.get(nr1-1).setWydarzenie(wydarzenia.get(nr2-1));
 
@@ -156,26 +169,32 @@ public class dataManager {
 		db.przypiszKontaktdoWydarzenia(kontakty.get(nr1-1).getID(), wydarzenia.get(nr2-1).getID());
 		for(int i=0; i<wydarzenia.size(); i++) {
 			if(wydarzenia.get(i).equalsKontakty(kontakty.get(nr1-1))==true && i != nr2-1) {
-				db.usunAssignKontakt(kontakty.get(nr1-1));
-				wydarzenia.get(i).dropEqualKontakt(kontakty.get(nr1-1));
-				db.przypiszKontaktdoWydarzenia(kontakty.get(nr1-1).getID(), wydarzenia.get(nr2-1).getID());
-				//xml.zapisKontaktowDoXML(kontakty);
-				//xml.zapisWydarzeniaDoXML(wydarzenia);
+				if(db.polacz()!=null) {
+					db.usunAssignKontakt(kontakty.get(nr1-1));
+					wydarzenia.get(i).dropEqualKontakt(kontakty.get(nr1-1));
+					db.przypiszKontaktdoWydarzenia(kontakty.get(nr1-1).getID(), wydarzenia.get(nr2-1).getID());
+					xml.zapisKontaktowDoXML(kontakty);
+					xml.zapisWydarzeniaDoXML(wydarzenia);
+				} else {
+					wydarzenia.get(i).dropEqualKontakt(kontakty.get(nr1-1));
+					xml.zapisKontaktowDoXML(kontakty);
+					xml.zapisWydarzeniaDoXML(wydarzenia);
+				}
 			}
 		}
-		//xml.zapisKontaktowDoXML(kontakty);
-		//xml.zapisWydarzeniaDoXML(wydarzenia);
+		xml.zapisKontaktowDoXML(kontakty);
+		xml.zapisWydarzeniaDoXML(wydarzenia);
 		} else {
 			System.out.println("Ten kontakt został już dodany do tego wydarzenia");
 			for(int i=0; i<wydarzenia.size(); i++) {
 				if(wydarzenia.get(i).equalsKontakty(kontakty.get(nr1-1))==true && i != nr2-1) {
 					wydarzenia.get(i).dropEqualKontakt(kontakty.get(nr1-1));
-					//xml.zapisKontaktowDoXML(kontakty);
-					//xml.zapisWydarzeniaDoXML(wydarzenia);
+					xml.zapisKontaktowDoXML(kontakty);
+					xml.zapisWydarzeniaDoXML(wydarzenia);
 				}
 			}
-			//xml.zapisKontaktowDoXML(kontakty);
-			//xml.zapisWydarzeniaDoXML(wydarzenia);
+			xml.zapisKontaktowDoXML(kontakty);
+			xml.zapisWydarzeniaDoXML(wydarzenia);
 		}
 	}
 	
