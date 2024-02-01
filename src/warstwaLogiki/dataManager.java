@@ -34,6 +34,10 @@ public class dataManager {
 			db.odczytajKontakty(kontakty);
 			db.odczytajWydarzenia(wydarzenia);
 			db.polaczAssign(kontakty, wydarzenia);
+			} else {
+				db.odczytajKontakty(kontakty);
+				db.odczytajWydarzenia(wydarzenia);
+				db.polaczAssign(kontakty, wydarzenia);
 			}
 		} else {
 			xml.odczytKontaktowXML(kontakty);

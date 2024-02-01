@@ -30,8 +30,9 @@ public class Glowna {
 		consoleUI cui = new consoleUI(dm);
 		
 		//graphicUI gui = new graphicUI();
-		
-		while(true) {
+		//cui.showCUI(sc);
+		Application.launch(graphicUI.class,args);
+		/*while(true) {
 			System.out.println("Wybierz interfejs: ");
 			System.out.println("1 Konsolowy");
 			System.out.println("2 Graficzny");
@@ -45,7 +46,7 @@ public class Glowna {
 				Application.launch(graphicUI.class,args);
 				System.out.println("Nie działa");
 			}
-		}
+		}*/
 	}
 
 	private static void launch(String[] args) {

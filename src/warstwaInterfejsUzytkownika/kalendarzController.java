@@ -1,12 +1,19 @@
 package warstwaInterfejsUzytkownika;
 
+import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.util.ArrayList;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
@@ -14,13 +21,12 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import warstwaDanych.Kontakt;
 
 
 public class kalendarzController {
+	private warstwaLogiki.dataManager dataManager;
 	private YearMonth currentYearMonth;
-    // Kalendarz Tab
-    @FXML
-    private Tab kalendarzTab;
 
     @FXML
     private Label miesiac;
@@ -37,67 +43,33 @@ public class kalendarzController {
     @FXML
     private Button rightButton;
 
-    // Kontakty Tab
-    @FXML
-    private Tab kontaktyTab;
-
-    @FXML
-    private VBox vboxKontakty;
-
-    @FXML
-    private Label imie;
-
-    @FXML
-    private Label nazwisko;
-
-    @FXML
-    private Label nrtel;
-
-    @FXML
-    private Label email;
-
-    // Wydarzenia Tab
-    @FXML
-    private Tab wydarzeniaTab;
-
-    @FXML
-    private VBox vboxWydarzenia;
-
-    @FXML
-    private Label nazwa;
-
-    @FXML
-    private Label miejsce;
-
-    @FXML
-    private Label data;
-
-    @FXML
-    private Label godzina;
+	private Parent root;
+	private Stage stage;
+	private Scene scene;
+	@FXML
+    private kontaktyController kontaktyController;
     
     @FXML
     private void initialize() {
         currentYearMonth = YearMonth.now();
-        createCalendarGrid();  // Utwórz siatkę kalendarza
+        createCalendarGrid();
         updateCalendar();
         centerGridPane();
     }
 
     private void createCalendarGrid() {
-        kalendarz.getChildren().clear();  // Wyczyść istniejące etykiety przed utworzeniem nowej siatki
+        kalendarz.getChildren().clear();
 
-        // Days of the week labels
         String[] daysOfWeek = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
         for (int i = 0; i < daysOfWeek.length; i++) {
             Label dayLabel = new Label(daysOfWeek[i]);
             kalendarz.add(dayLabel, i, 0);
         }
 
-        // Days of the month labels
         for (int row = 0; row < 6; row++) {
             for (int col = 0; col < 7; col++) {
                 Label dayLabel = new Label();
-                kalendarz.add(dayLabel, col, row + 1);  // Dodaj 1, aby zacząć od wiersza 1
+                kalendarz.add(dayLabel, col, row + 1);
             }
         }
     }
@@ -111,7 +83,6 @@ public class kalendarzController {
         LocalDate firstDayOfMonth = LocalDate.of(currentYearMonth.getYear(), currentYearMonth.getMonth(), 1);
         int dayOfWeek = firstDayOfMonth.getDayOfWeek().getValue();
 
-        // Aktualizacja etykiet z miesiącem i rokiem
         miesiac.setText(currentYearMonth.getMonth().toString());
         rok.setText(String.valueOf(currentYearMonth.getYear()));
 
@@ -122,14 +93,11 @@ public class kalendarzController {
                 Label dayLabel = (Label) kalendarz.getChildren().get(7 * row + col);
 
                 if (row == 0 && col < dayOfWeek - 1) {
-                    // Dni przed pierwszym dniem miesiąca
                     dayLabel.setText("");
                 } else if (dayCounter <= daysInMonth) {
-                    // Dni w miesiącu
                     dayLabel.setText(Integer.toString(dayCounter));
                     dayCounter++;
                 } else {
-                    // Dni po ostatnim dniu miesiąca
                     dayLabel.setText("");
                 }
             }
@@ -159,4 +127,22 @@ public class kalendarzController {
         currentYearMonth = currentYearMonth.plusMonths(1);
         updateCalendar();
     }
+    
+    public void switchToKontakty(ActionEvent event) throws IOException {
+    	FXMLLoader loader = new FXMLLoader(getClass().getResource("kontakty.fxml"));
+        Parent root = loader.load();
+    	stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+    	scene = new Scene(root);
+    	stage.setScene(scene);
+    	stage.show();
+    }
+    
+    public void switchToWydarzenia(ActionEvent event) throws IOException {
+  	  	root = FXMLLoader.load(getClass().getResource("wydarzenia.fxml"));
+  	  	stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+  	  	scene = new Scene(root);
+  	  	stage.setScene(scene);
+  	  	stage.show();
+  }
+    
 }
