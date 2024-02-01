@@ -193,18 +193,9 @@ public class dbManager {
 			
 			ResultSet result = stat.executeQuery(sql);
 			while(result.next()) {
-				int idK = result.getInt("assign.ID_kontaktu");
-				int idW = result.getInt("assign.ID_wydarzenia");
-				for(int i=0;i<k.size();i++) {
-					if(k.get(i).getID()==idK) {
-						for(int j=0;j<w.size();j++) {
-							if(w.get(j).getID()==idW) {
-								k.get(i).setWydarzenie(w.get(j));
-								w.get(j).setKontakt(k.get(i));
-							}
-						}
-					}
-				}
+
+				k.get(result.getInt(2)).setWydarzenie(w.get(result.getInt(3)));
+				w.get(result.getInt(3)).setKontakt(k.get(result.getInt(2)));
 			}
 			stat.close();
 			polacz().close();

@@ -14,4 +14,36 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>src/warstwaInterfejsUzytkownika/GUI.fxml</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Desktop/Dane/Organizer/src/warstwaInterfejsUzytkownika/GUI.fxml</locationURI>
+		</link>
+		<link>
+			<name>src/warstwaInterfejsUzytkownika/graphicUI.java</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Desktop/Dane/Organizer/src/warstwaInterfejsUzytkownika/graphicUI.java</locationURI>
+		</link>
+		<link>
+			<name>src/warstwaInterfejsUzytkownika/kalendarz.fxml</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Desktop/Dane/Organizer/src/warstwaInterfejsUzytkownika/kalendarz.fxml</locationURI>
+		</link>
+		<link>
+			<name>src/warstwaInterfejsUzytkownika/kalendarzController.java</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Desktop/Dane/Organizer/src/warstwaInterfejsUzytkownika/kalendarzController.java</locationURI>
+		</link>
+		<link>
+			<name>src/warstwaInterfejsUzytkownika/kontakty.fxml</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Desktop/Dane/Organizer/src/warstwaInterfejsUzytkownika/kontakty.fxml</locationURI>
+		</link>
+		<link>
+			<name>src/warstwaInterfejsUzytkownika/wydarzenia.fxml</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Desktop/Dane/Organizer/src/warstwaInterfejsUzytkownika/wydarzenia.fxml</locationURI>
+		</link>
+	</linkedResources>
 </projectDescription>

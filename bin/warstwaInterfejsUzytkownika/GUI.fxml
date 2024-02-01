@@ -2,9 +2,6 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -12,7 +9,6 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
 <TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="warstwaInterfejsUzytkownika.kalendarzController">
@@ -49,6 +45,7 @@
                       <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
                       <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
                       <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
                     </rowConstraints>
                      <children>
                         <Label fx:id="dayLabel" alignment="CENTER" text="Label" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
@@ -86,6 +83,13 @@
                         <Label fx:id="dayLabel" text="Label" GridPane.columnIndex="4" GridPane.rowIndex="4" />
                         <Label fx:id="dayLabel" text="Label" GridPane.columnIndex="5" GridPane.rowIndex="4" />
                         <Label fx:id="dayLabel" text="Label" GridPane.columnIndex="6" GridPane.rowIndex="4" />
+                        <Label fx:id="dayLabel" text="Label" GridPane.rowIndex="5" />
+                        <Label fx:id="dayLabel" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                        <Label fx:id="dayLabel" text="Label" GridPane.columnIndex="2" GridPane.rowIndex="5" />
+                        <Label fx:id="dayLabel" text="Label" GridPane.columnIndex="3" GridPane.rowIndex="5" />
+                        <Label fx:id="dayLabel" text="Label" GridPane.columnIndex="4" GridPane.rowIndex="5" />
+                        <Label fx:id="dayLabel" text="Label" GridPane.columnIndex="5" GridPane.rowIndex="5" />
+                        <Label fx:id="dayLabel" text="Label" GridPane.columnIndex="6" GridPane.rowIndex="5" />
                      </children>
                   </GridPane>
                   <HBox layoutX="113.0" layoutY="67.0" prefHeight="19.0" prefWidth="374.0">
@@ -102,66 +106,5 @@
                </children></AnchorPane>
       </content>
     </Tab>
-    <Tab fx:id="kontaktyTab" text="Kontakty">
-      <content>
-        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-               <children>
-                  <VBox fx:id="vboxKontakty" layoutX="8.0" layoutY="66.0" prefHeight="291.0" prefWidth="584.0">
-                     <children>
-                        <HBox prefHeight="20.0" prefWidth="584.0">
-                           <children>
-                              <Label fx:id="imie" alignment="CENTER" prefHeight="30.0" prefWidth="102.0" text="Imię" />
-                              <Label fx:id="nazwisko" alignment="CENTER" prefHeight="37.0" prefWidth="159.0" text="Nazwisko" />
-                              <Label fx:id="nrtel" alignment="CENTER" prefHeight="30.0" prefWidth="91.0" text="Numer telefonu" />
-                              <Label fx:id="email" alignment="CENTER" prefHeight="34.0" prefWidth="233.0" text="E-mail" />
-                           </children>
-                        </HBox>
-                     </children>
-                  </VBox>
-                  <MenuBar prefHeight="25.0" prefWidth="600.0">
-                    <menus>
-                      <Menu mnemonicParsing="false" text="Zarządzanie Kontaktami">
-                        <items>
-                          <MenuItem mnemonicParsing="false" text="Stwórz kontakt" />
-                              <MenuItem mnemonicParsing="false" text="Usuń kontakt" />
-                              <MenuItem mnemonicParsing="false" text="Edytuj kontakt" />
-                        </items>
-                      </Menu>
-                    </menus>
-                  </MenuBar>
-               </children></AnchorPane>
-      </content>
-    </Tab>
-      <Tab fx:id="wydarzeniaTab" text="Wydarzenia">
-         <content>
-            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-               <children>
-                  <MenuBar prefHeight="25.0" prefWidth="600.0">
-                    <menus>
-                      <Menu mnemonicParsing="false" text="Zarządzanie Wydarzeniami">
-                        <items>
-                          <MenuItem mnemonicParsing="false" text="Stwórz wydarzenie" />
-                              <MenuItem mnemonicParsing="false" text="Usuń wydarzenie" />
-                              <MenuItem mnemonicParsing="false" text="Edytuj wydarzenie" />
-                        </items>
-                      </Menu>
-                    </menus>
-                  </MenuBar>
-                  <VBox fx:id="vboxWydarzenia" layoutX="11.0" layoutY="70.0" prefHeight="287.0" prefWidth="579.0">
-                     <children>
-                        <HBox prefHeight="21.0" prefWidth="579.0">
-                           <children>
-                              <Label fx:id="nazwa" alignment="CENTER" prefHeight="21.0" prefWidth="246.0" text="Nazwa" />
-                              <Label fx:id="miejsce" alignment="CENTER" prefHeight="21.0" prefWidth="259.0" text="Miejsce" />
-                              <Label fx:id="data" prefHeight="21.0" prefWidth="64.0" text="Data" />
-                              <Label fx:id="godzina" prefHeight="21.0" prefWidth="66.0" text="Godzina" />
-                           </children>
-                        </HBox>
-                     </children>
-                  </VBox>
-               </children>
-            </AnchorPane>
-         </content>
-      </Tab>
   </tabs>
 </TabPane>

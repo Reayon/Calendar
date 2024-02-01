@@ -34,6 +34,10 @@ public class dataManager {
 			db.odczytajKontakty(kontakty);
 			db.odczytajWydarzenia(wydarzenia);
 			db.polaczAssign(kontakty, wydarzenia);
+			} else {
+			db.odczytajKontakty(kontakty);
+			db.odczytajWydarzenia(wydarzenia);
+			db.polaczAssign(kontakty, wydarzenia);
 			}
 		} else {
 			xml.odczytKontaktowXML(kontakty);
@@ -55,7 +59,7 @@ public class dataManager {
 		String tekst = "";
 		for (int i = 0; i < wydarzenia.size(); i++) {
 			tekst += i+1+". ";
-			tekst += wydarzenia.get(i)+" ";
+			tekst += wydarzenia.get(i).toStringZKontaktami()+" ";
 			tekst += "\n";
 		}
 		return tekst;
@@ -106,11 +110,15 @@ public class dataManager {
 	
 	public void removeKontakt(int nr) throws SQLException {
 		
+		db.usunAssignKontakt(kontakty.get(nr-1));
 		db.usunKontakt(kontakty.get(nr-1));
-		if(kontakty.get(nr-1).getWydarzenie()!=null) {
-			db.usunAssignKontakt(kontakty.get(nr-1));
-			wydarzenia.get(kontakty.get(nr-1).getWydarzenie().getID()).dropEqualKontakt(kontakty.get(nr-1));
-		}
+		for(int i=0;i<wydarzenia.size();i++) {
+            for(int j=0;j<kontakty.get(nr-1).getWydarzeniaSize();j++) {
+                if(wydarzenia.get(i).equals(kontakty.get(nr-1).getExactWydarzenie(j))) {
+                    wydarzenia.get(i).dropEqualKontakt(kontakty.get(nr-1));
+                }
+            }
+        }
 		kontakty.remove(nr-1);
 		xml.zapisKontaktowDoXML(kontakty);
 		
@@ -150,7 +158,7 @@ public class dataManager {
 		for(int i=0;i<kontakty.size();i++) {
             for(int j=0;j<wydarzenia.get(nr-1).getKontaktySize();j++) {
                 if(kontakty.get(i).equals(wydarzenia.get(nr-1).getExactKontakt(j))) {
-                    kontakty.get(i).dropWydarzenie();
+                    kontakty.get(i).dropExactWydarzenie(wydarzenia.get(nr-1));
                 }
             }
         }
@@ -162,24 +170,30 @@ public class dataManager {
 	
 	public void assignKontaktToWydarzenia(int nr1, int nr2) throws SQLException {
 		
-		kontakty.get(nr1-1).setWydarzenie(wydarzenia.get(nr2-1));
+		if(kontakty.get(nr1-1).equalsWydarzenia(wydarzenia.get(nr2-1))==false) {
+			kontakty.get(nr1-1).setWydarzenie(wydarzenia.get(nr2-1));
+			wydarzenia.get(nr2-1).setKontakt(kontakty.get(nr1-1));
+			db.przypiszKontaktdoWydarzenia(kontakty.get(nr1-1).getID(), wydarzenia.get(nr2-1).getID());
+			xml.zapisKontaktowDoXML(kontakty);
+			xml.zapisWydarzeniaDoXML(wydarzenia);
+		} else {
+			System.out.println("Ten kontakt został już dodany do tego wydarzenia");
+		}
+		
+		
+		
+		/*kontakty.get(nr1-1).setWydarzenie(wydarzenia.get(nr2-1));
 
 		if(wydarzenia.get(nr2-1).equalsKontakty(kontakty.get(nr1-1))==false) {
 		wydarzenia.get(nr2-1).setKontakt(kontakty.get(nr1-1));
 		db.przypiszKontaktdoWydarzenia(kontakty.get(nr1-1).getID(), wydarzenia.get(nr2-1).getID());
 		for(int i=0; i<wydarzenia.size(); i++) {
 			if(wydarzenia.get(i).equalsKontakty(kontakty.get(nr1-1))==true && i != nr2-1) {
-				if(db.polacz()!=null) {
-					db.usunAssignKontakt(kontakty.get(nr1-1));
-					wydarzenia.get(i).dropEqualKontakt(kontakty.get(nr1-1));
-					db.przypiszKontaktdoWydarzenia(kontakty.get(nr1-1).getID(), wydarzenia.get(nr2-1).getID());
-					xml.zapisKontaktowDoXML(kontakty);
-					xml.zapisWydarzeniaDoXML(wydarzenia);
-				} else {
-					wydarzenia.get(i).dropEqualKontakt(kontakty.get(nr1-1));
-					xml.zapisKontaktowDoXML(kontakty);
-					xml.zapisWydarzeniaDoXML(wydarzenia);
-				}
+				db.usunAssignKontakt(kontakty.get(nr1-1));
+				wydarzenia.get(i).dropEqualKontakt(kontakty.get(nr1-1));
+				db.przypiszKontaktdoWydarzenia(kontakty.get(nr1-1).getID(), wydarzenia.get(nr2-1).getID());
+				xml.zapisKontaktowDoXML(kontakty);
+				xml.zapisWydarzeniaDoXML(wydarzenia);
 			}
 		}
 		xml.zapisKontaktowDoXML(kontakty);
@@ -195,7 +209,7 @@ public class dataManager {
 			}
 			xml.zapisKontaktowDoXML(kontakty);
 			xml.zapisWydarzeniaDoXML(wydarzenia);
-		}
+		}*/
 	}
 	
 	public void sortujKontakty(int wybor) throws SQLException {

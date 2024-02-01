@@ -106,6 +106,11 @@ public class Wydarzenia implements Comparable<Wydarzenia> {
 	
 	public String toString() {
 
+		return nazwa + " " + miejsce + " " + data + " " + godzina + " " + id;
+	}
+	
+	public String toStringZKontaktami() {
+
 		return nazwa + " " + miejsce + " " + data + " " + godzina + " " + id +" "+ getKontakty();
 	}
 

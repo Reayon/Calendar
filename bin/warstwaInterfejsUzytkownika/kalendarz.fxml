@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="426.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="warstwaInterfejsUzytkownika.kalendarzController">
+   <children>
+      <ToolBar layoutX="1.0" layoutY="-3.0" prefHeight="19.0" prefWidth="599.0">
+        <items>
+          <Button mnemonicParsing="false" onAction="#switchToKontakty" text="Kontakty" />
+            <Button mnemonicParsing="false" text="Wydarzenia" />
+        </items>
+      </ToolBar>
+      <Label fx:id="miesiac" alignment="CENTER" layoutX="161.0" layoutY="52.0" prefHeight="32.0" prefWidth="139.0" text="Miesiac">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <Label fx:id="rok" alignment="CENTER" layoutX="300.0" layoutY="52.0" prefHeight="31.0" prefWidth="123.0" text="Rok">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <Button fx:id="rightButton" layoutX="214.0" layoutY="374.0" mnemonicParsing="false" onAction="#showPreviousMonth" text="&lt;&lt;" />
+      <Button fx:id="leftButton" layoutX="345.0" layoutY="374.0" mnemonicParsing="false" onAction="#showNextMonth" text="&gt;&gt;" />
+      <GridPane fx:id="kalendarz" layoutX="109.0" layoutY="134.0" prefHeight="200.0" prefWidth="383.0">
+         <columnConstraints>
+            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="260.0" minWidth="10.0" prefWidth="242.0" />
+            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="260.0" minWidth="10.0" prefWidth="242.0" />
+            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="260.0" minWidth="10.0" prefWidth="242.0" />
+            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="260.0" minWidth="10.0" prefWidth="242.0" />
+            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="260.0" minWidth="10.0" prefWidth="242.0" />
+            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="260.0" minWidth="10.0" prefWidth="242.0" />
+            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="250.0" minWidth="10.0" prefWidth="242.0" />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
+         </rowConstraints>
+         <children>
+            <Label fx:id="dayLabel" alignment="CENTER" text="Label" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+            <Label fx:id="dayLabel" alignment="TOP_CENTER" text="Label" GridPane.columnIndex="1" />
+            <Label fx:id="dayLabel" text="Label" GridPane.columnIndex="2" />
+            <Label fx:id="dayLabel" text="Label" GridPane.columnIndex="3" />
+            <Label fx:id="dayLabel" text="Label" GridPane.columnIndex="4" />
+            <Label fx:id="dayLabel" text="Label" GridPane.columnIndex="5" />
+            <Label fx:id="dayLabel" text="Label" GridPane.columnIndex="6" />
+            <Label fx:id="dayLabel" text="Label" GridPane.rowIndex="1" />
+            <Label fx:id="dayLabel" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Label fx:id="dayLabel" text="Label" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+            <Label fx:id="dayLabel" text="Label" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+            <Label fx:id="dayLabel" text="Label" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+            <Label fx:id="dayLabel" text="Label" GridPane.columnIndex="5" GridPane.rowIndex="1" />
+            <Label fx:id="dayLabel" text="Label" GridPane.columnIndex="6" GridPane.rowIndex="1" />
+            <Label fx:id="dayLabel" text="Label" GridPane.rowIndex="2" />
+            <Label fx:id="dayLabel" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <Label fx:id="dayLabel" text="Label" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+            <Label fx:id="dayLabel" text="Label" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+            <Label fx:id="dayLabel" text="Label" GridPane.columnIndex="4" GridPane.rowIndex="2" />
+            <Label fx:id="dayLabel" text="Label" GridPane.columnIndex="5" GridPane.rowIndex="2" />
+            <Label fx:id="dayLabel" text="Label" GridPane.columnIndex="6" GridPane.rowIndex="2" />
+            <Label fx:id="dayLabel" text="Label" GridPane.rowIndex="3" />
+            <Label fx:id="dayLabel" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <Label fx:id="dayLabel" text="Label" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+            <Label fx:id="dayLabel" text="Label" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+            <Label fx:id="dayLabel" text="Label" GridPane.rowIndex="4" />
+            <Label fx:id="dayLabel" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+            <Label fx:id="dayLabel" text="Label" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+            <Label fx:id="dayLabel" text="Label" GridPane.columnIndex="3" GridPane.rowIndex="4" />
+            <Label fx:id="dayLabel" text="Label" GridPane.columnIndex="4" GridPane.rowIndex="3" />
+            <Label fx:id="dayLabel" text="Label" GridPane.columnIndex="5" GridPane.rowIndex="3" />
+            <Label fx:id="dayLabel" text="Label" GridPane.columnIndex="6" GridPane.rowIndex="3" />
+            <Label fx:id="dayLabel" text="Label" GridPane.columnIndex="4" GridPane.rowIndex="4" />
+            <Label fx:id="dayLabel" text="Label" GridPane.columnIndex="5" GridPane.rowIndex="4" />
+            <Label fx:id="dayLabel" text="Label" GridPane.columnIndex="6" GridPane.rowIndex="4" />
+            <Label fx:id="dayLabel" text="Label" GridPane.rowIndex="5" />
+            <Label fx:id="dayLabel" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+            <Label fx:id="dayLabel" text="Label" GridPane.columnIndex="2" GridPane.rowIndex="5" />
+            <Label fx:id="dayLabel" text="Label" GridPane.columnIndex="3" GridPane.rowIndex="5" />
+            <Label fx:id="dayLabel" text="Label" GridPane.columnIndex="4" GridPane.rowIndex="5" />
+            <Label fx:id="dayLabel" text="Label" GridPane.columnIndex="5" GridPane.rowIndex="5" />
+            <Label fx:id="dayLabel" text="Label" GridPane.columnIndex="6" GridPane.rowIndex="5" />
+         </children>
+      </GridPane>
+      <HBox layoutX="113.0" layoutY="109.0" prefHeight="19.0" prefWidth="374.0">
+         <children>
+            <Label prefHeight="19.0" prefWidth="50.0" text="Pn" />
+            <Label prefHeight="19.0" prefWidth="55.0" text="Wt" />
+            <Label prefHeight="19.0" prefWidth="53.0" text="Śr" />
+            <Label prefHeight="26.0" prefWidth="54.0" text="Czw" />
+            <Label prefHeight="30.0" prefWidth="54.0" text="Pt" />
+            <Label prefHeight="35.0" prefWidth="55.0" text="Sb" />
+            <Label prefHeight="26.0" prefWidth="55.0" text="Nd" />
+         </children>
+      </HBox>
+   </children>
+</AnchorPane>

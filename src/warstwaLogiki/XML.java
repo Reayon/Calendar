@@ -42,32 +42,22 @@ public class XML {
 				writer.writeStartElement("Email");
 				writer.writeCharacters(aktualnyKontakt.getEmail());
 				writer.writeEndElement();
-				if(aktualnyKontakt.getWydarzenie()==null) {
-					writer.writeStartElement("Wydarzenie");
+				for (int j = 0; j < kontakt.get(i).getWydarzeniaSize(); j++) {
+					Wydarzenia aktualneWydarzenie = kontakt.get(i).getExactWydarzenie(j);
+					writer.writeStartElement("Wydarzenie"+i);
 					writer.writeStartElement("Nazwa");
+					writer.writeCharacters(aktualneWydarzenie.getNazwa());
 					writer.writeEndElement();
 					writer.writeStartElement("Miejsce");
+					writer.writeCharacters(aktualneWydarzenie.getMiejsce());
 					writer.writeEndElement();
 					writer.writeStartElement("Data");
+					writer.writeCharacters(aktualneWydarzenie.getData());
 					writer.writeEndElement();
 					writer.writeStartElement("Godzina");
+					writer.writeCharacters(aktualneWydarzenie.getGodzina());
 					writer.writeEndElement();
 					writer.writeEndElement();
-				} else {
-				writer.writeStartElement("Wydarzenie");
-				writer.writeStartElement("Nazwa");
-				writer.writeCharacters(aktualnyKontakt.getWydarzenie().getNazwa());
-				writer.writeEndElement();
-				writer.writeStartElement("Miejsce");
-				writer.writeCharacters(aktualnyKontakt.getWydarzenie().getMiejsce());
-				writer.writeEndElement();
-				writer.writeStartElement("Data");
-				writer.writeCharacters(aktualnyKontakt.getWydarzenie().getData());
-				writer.writeEndElement();
-				writer.writeStartElement("Godzina");
-				writer.writeCharacters(aktualnyKontakt.getWydarzenie().getGodzina());
-				writer.writeEndElement();
-				writer.writeEndElement();
 				}writer.writeEndElement();
 			}
 			writer.writeEndElement();
@@ -100,14 +90,22 @@ public class XML {
 			    		String nu = eElement.getElementsByTagName("NumerTelefonu").item(0).getTextContent();
 			    		int numer = Integer.parseInt(nu);
 			    		String email = eElement.getElementsByTagName("Email").item(0).getTextContent();
-			    		
-			    		String nazwa = eElement.getElementsByTagName("Nazwa").item(0).getTextContent();
-			    		String miejsce = eElement.getElementsByTagName("Miejsce").item(0).getTextContent();
-			    		String data = eElement.getElementsByTagName("Data").item(0).getTextContent();
-			    		String godzina = eElement.getElementsByTagName("Godzina").item(0).getTextContent();
-			    		Wydarzenia w = new Wydarzenia(nazwa, miejsce, data, godzina);
-			    		kontakt.add(new Kontakt(imie, nazwisko, numer, email));
-			    		kontakt.get(temp).setWydarzenie(w);
+			    		Kontakt k = new Kontakt(imie, nazwisko, numer, email);
+			    		kontakt.add(k);
+			    		NodeList noList = doc.getElementsByTagName("Wydarzenie"+temp);
+			            for (int i = 0; i < noList.getLength(); i++) {
+			            	Node noNode = noList.item(i);
+			            	if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+			            		Element elElement = (Element) noNode;
+			            		String nazwa = elElement.getElementsByTagName("Nazwa").item(0).getTextContent();
+					    		String miejsce = elElement.getElementsByTagName("Miejsce").item(0).getTextContent();
+					    		String data = elElement.getElementsByTagName("Data").item(0).getTextContent();
+					    		String godzina = elElement.getElementsByTagName("Godzina").item(0).getTextContent();
+					    		Wydarzenia w = new Wydarzenia(nazwa, miejsce, data, godzina);
+			            		kontakt.get(temp).setWydarzenie(w);
+			            		w.setKontakt(k);
+			            	}
+			            };
 			        }
 			    }
 			} catch(Exception e) {
