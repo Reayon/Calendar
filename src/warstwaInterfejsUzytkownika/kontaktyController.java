@@ -32,9 +32,10 @@ import warstwaLogiki.dataManager;
 
 public class kontaktyController extends kalendarzController {
 	ObservableList<Kontakt> listaKontaktow = FXCollections.observableArrayList();
+	
 	@FXML
     private TableView<Kontakt> tabelaKontaktow;
-
+	
     @FXML
     private TableColumn<Kontakt, String> imieColumn;
 
@@ -201,6 +202,30 @@ public class kontaktyController extends kalendarzController {
                         dm.editKontakt(editedContact.getImie(), editedContact.getNazwisko(), editedContact.getNr(), editedContact.getEmail(), tabelaKontaktow.getSelectionModel().getSelectedIndex() + 2);
                     } catch (SQLException e) {
                         e.printStackTrace();
+                    }
+                });
+            }
+        }
+        
+        @FXML
+        private void onUsunButtonClicked() {
+            Kontakt selectedContact = tabelaKontaktow.getSelectionModel().getSelectedItem();
+            int selectedIdx = tabelaKontaktow.getSelectionModel().getSelectedIndex();
+            if (selectedContact != null) {
+            	Alert alert = new Alert(AlertType.CONFIRMATION);
+                alert.setTitle("Potwierdzenie usunięcia");
+                alert.setHeaderText("Czy na pewno chcesz usunąć wybrany kontakt?");
+                alert.setContentText("Tej operacji nie można cofnąć.");
+
+                Optional<ButtonType> result = alert.showAndWait();
+                result.ifPresent(buttonType -> {
+                    if (buttonType == ButtonType.OK) {
+                        try {
+                            dm.removeKontakt(selectedIdx+1);
+                            tabelaKontaktow.getItems().remove(selectedIdx);
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
                     }
                 });
             }

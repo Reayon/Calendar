@@ -137,6 +137,7 @@ public class dataManager {
 		System.out.println("Pomyślnie usunięto kontakt");
 	}
 	
+	
 	public void addWydarzenie(String nazwa, String miejsce, String data, String godzina) throws SQLException {
 		
 		if(equalsArrayListWydarzenia(new Wydarzenia(nazwa, miejsce, data, godzina))==false) {

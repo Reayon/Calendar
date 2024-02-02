@@ -14,10 +14,10 @@
          <children>
             <TableView fx:id="tabelaKontaktow" prefHeight="329.0" prefWidth="567.0">
               <columns>
-                <TableColumn fx:id="imieColumn" editable="false" prefWidth="123.0" resizable="false" text="Imie" />
-                <TableColumn fx:id="nazwiskoColumn" editable="false" prefWidth="130.0" resizable="false" text="Nazwisko" />
-                  <TableColumn fx:id="nrTelColumn" editable="false" prefWidth="102.0" resizable="false" text="Numer Telefonu" />
-                  <TableColumn fx:id="emailColumn" editable="false" prefWidth="211.0" resizable="false" text="E-Mail" />
+                <TableColumn fx:id="imieColumn" editable="false" prefWidth="99.0" resizable="false" text="Imie" />
+                <TableColumn fx:id="nazwiskoColumn" editable="false" prefWidth="122.0" resizable="false" text="Nazwisko" />
+                  <TableColumn fx:id="nrTelColumn" editable="false" prefWidth="104.0" resizable="false" text="Numer Telefonu" />
+                  <TableColumn fx:id="emailColumn" editable="false" prefWidth="241.0" resizable="false" text="E-Mail" />
               </columns>
             </TableView>
          </children>
@@ -25,7 +25,7 @@
       <ToolBar prefHeight="40.0" prefWidth="600.0">
         <items>
           <Button mnemonicParsing="false" onAction="#onAddContactButtonClicked" text="Dodaj" />
-            <Button layoutX="10.0" layoutY="13.0" mnemonicParsing="false" text="Usuń" />
+            <Button layoutX="10.0" layoutY="13.0" mnemonicParsing="false" onAction="#onUsunButtonClicked" text="Usuń" />
             <Button layoutX="66.0" layoutY="13.0" mnemonicParsing="false" onAction="#onEditContactButtonClicked" text="Edytuj" />
         </items>
       </ToolBar>
