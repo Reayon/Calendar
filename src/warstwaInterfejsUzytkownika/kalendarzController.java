@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -22,10 +23,11 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import warstwaDanych.Kontakt;
+import warstwaLogiki.dataManager;
 
 
 public class kalendarzController {
-	private warstwaLogiki.dataManager dataManager;
+	private dataManager dm;
 	private YearMonth currentYearMonth;
 
     @FXML
@@ -55,8 +57,15 @@ public class kalendarzController {
         createCalendarGrid();
         updateCalendar();
         centerGridPane();
+        Platform.runLater(()->{
+        	System.out.println();
+        });
     }
-
+    
+    public void setDataManager(dataManager dm) {
+        this.dm = dm;
+    }
+    
     private void createCalendarGrid() {
         kalendarz.getChildren().clear();
 
@@ -131,6 +140,8 @@ public class kalendarzController {
     public void switchToKontakty(ActionEvent event) throws IOException {
     	FXMLLoader loader = new FXMLLoader(getClass().getResource("kontakty.fxml"));
         Parent root = loader.load();
+        kontaktyController kontaktyController = loader.getController();
+        kontaktyController.setDataManager(dm);
     	stage = (Stage)((Node)event.getSource()).getScene().getWindow();
     	scene = new Scene(root);
     	stage.setScene(scene);

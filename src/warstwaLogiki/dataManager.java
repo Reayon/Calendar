@@ -15,10 +15,19 @@ public class dataManager {
 	private ArrayList<Kontakt> kontakty = new ArrayList<Kontakt>();
 	private ArrayList<Wydarzenia> wydarzenia = new ArrayList<Wydarzenia>();
 	
+	public dataManager() {
+	    this.kontakty = new ArrayList<>();
+	    this.wydarzenia = new ArrayList<>();
+	}
+	
 	public dataManager(ArrayList<Kontakt> kontakty, ArrayList<Wydarzenia> wydarzenia) {
 		this.kontakty = kontakty;
 		this.wydarzenia = wydarzenia;
 	}
+	
+	public ArrayList<Kontakt> pobierzListeKontaktow() {
+		return kontakty;
+    }
 	
 	public void wykonajZBufora() throws FileNotFoundException {
 		if(db.getLicznikZapytan() > 10) {
@@ -198,7 +207,7 @@ public class dataManager {
 				}
 			}
 			xml.zapisKontaktowDoXML(kontakty);
-			xml.zapisWydarzeniaDoXML(wydarzenia);
+	xml.zapisWydarzeniaDoXML(wydarzenia);
 		}
 	}
 	

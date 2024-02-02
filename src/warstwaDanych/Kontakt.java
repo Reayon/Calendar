@@ -4,7 +4,7 @@ public class Kontakt implements Comparable<Kontakt> {
 
 	private String imie;
 	private String nazwisko;
-	private int nr_tel;
+	private int nr;
 	private String email;
 	private Wydarzenia wydarzenie;
 	private int id;
@@ -12,7 +12,7 @@ public class Kontakt implements Comparable<Kontakt> {
 	public Kontakt(String imie, String nazwisko, int nr_tel, String email) {
 		this.imie = imie;
 		this.nazwisko = nazwisko;
-		this.nr_tel = nr_tel;
+		this.nr = nr_tel;
 		this.email = email;
 	}
 
@@ -26,7 +26,7 @@ public class Kontakt implements Comparable<Kontakt> {
 	}
 
 	public void setNr(int n) {
-		nr_tel = n;
+		nr = n;
 	}
 	
 	public void setEmail(String e) {
@@ -51,7 +51,7 @@ public class Kontakt implements Comparable<Kontakt> {
 	}
 
 	public int getNr() {
-		return nr_tel;
+		return nr;
 	}
 	
 	public String getEmail() {
@@ -85,7 +85,7 @@ public class Kontakt implements Comparable<Kontakt> {
 	}
 
 	public String toString() {
-		return imie + " " + nazwisko + " " + Integer.toString(nr_tel) + " " + email + " id: " +id;
+		return imie + " " + nazwisko + " " + Integer.toString(nr) + " " + email + " id: " +id;
 	}
 	
 	public String toStringZWydarzeniem() {
@@ -97,7 +97,7 @@ public class Kontakt implements Comparable<Kontakt> {
 			Kontakt k = (Kontakt) other;
 			if(this.imie.equals(k.imie)) {
 				if(this.nazwisko.equals(k.nazwisko)) {
-					if(this.nr_tel == k.nr_tel) {
+					if(this.nr == k.nr) {
 						if(this.email.equals(k.email)) {
 							return true;
 						}
