@@ -88,6 +88,10 @@ public class Kontakt implements Comparable<Kontakt> {
 		return imie + " " + nazwisko + " " + Integer.toString(nr) + " " + email + " id: " +id;
 	}
 	
+	public String toStringImieNazwisko() {
+		return imie + " " + nazwisko;
+	}
+	
 	public String toStringZWydarzeniem() {
 		return toString()+" "+getStringWydarzenie();
 	}

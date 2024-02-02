@@ -29,6 +29,10 @@ public class dataManager {
 		return kontakty;
     }
 	
+	public ArrayList<Wydarzenia> pobierzListeWydarzen() {
+		return wydarzenia;
+    }
+	
 	public void wykonajZBufora() throws FileNotFoundException {
 		if(db.getLicznikZapytan() > 10) {
 			db.wykonajZapytania();
@@ -68,7 +72,7 @@ public class dataManager {
 		String tekst = "";
 		for (int i = 0; i < wydarzenia.size(); i++) {
 			tekst += i+1+". ";
-			tekst += wydarzenia.get(i)+" ";
+			tekst += wydarzenia.get(i).toStringCUI()+" ";
 			tekst += "\n";
 		}
 		return tekst;

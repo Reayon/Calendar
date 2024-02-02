@@ -31,8 +31,7 @@
       </ToolBar>
       <ButtonBar layoutX="400.0" layoutY="-1.0" prefHeight="40.0" prefWidth="200.0">
         <buttons>
-          <Button mnemonicParsing="false" text="Wydarzenia" />
-            <Button layoutX="135.0" layoutY="30.0" mnemonicParsing="false" text="Kalendarz" />
+            <Button layoutX="135.0" layoutY="30.0" mnemonicParsing="false" onAction="#switchToKalendarz" text="Kalendarz" />
         </buttons>
       </ButtonBar>
    </children>

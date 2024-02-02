@@ -68,6 +68,10 @@ public class Wydarzenia implements Comparable<Wydarzenia> {
 		return id;
 	}
 	
+	public ArrayList<Kontakt> getArrayKontakt() {
+		return this.kontakty;
+	}
+	
 	public Kontakt getExactKontakt(int i)
 	{
 		return kontakty.get(i);
@@ -99,12 +103,33 @@ public class Wydarzenia implements Comparable<Wydarzenia> {
 		}
 	}
 	
+	public String getKontaktyImieNazwisko()
+	{
+		String tekst = "";
+		if(kontakty.isEmpty())
+		{
+			return "brak kontaktów";
+		}
+		else
+		{
+		for (int i = 0; i < kontakty.size(); i++) {
+			tekst += kontakty.get(i).toStringImieNazwisko();
+			tekst += "\n";
+		} return tekst;
+		}
+	}
+	
 	public int getKontaktySize()
 	{
 		return kontakty.size();
 	}
 	
 	public String toString() {
+
+		return nazwa + " " + miejsce + " " + data + " " + godzina + " " + id +" "+ getKontaktyImieNazwisko();
+	}
+	
+	public String toStringCUI() {
 
 		return nazwa + " " + miejsce + " " + data + " " + godzina + " " + id +" "+ getKontakty();
 	}

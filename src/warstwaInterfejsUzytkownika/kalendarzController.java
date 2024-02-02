@@ -27,7 +27,7 @@ import warstwaLogiki.dataManager;
 
 
 public class kalendarzController {
-	private dataManager dm;
+	protected dataManager dm = new dataManager();
 	private YearMonth currentYearMonth;
 
     @FXML
@@ -46,10 +46,13 @@ public class kalendarzController {
     private Button rightButton;
 
 	private Parent root;
-	private Stage stage;
-	private Scene scene;
+	protected Stage stage;
+	protected Scene scene;
 	@FXML
     private kontaktyController kontaktyController;
+	
+	@FXML
+	private wydarzeniaController wydarzeniaController;
     
     @FXML
     private void initialize() {
@@ -149,7 +152,10 @@ public class kalendarzController {
     }
     
     public void switchToWydarzenia(ActionEvent event) throws IOException {
-  	  	root = FXMLLoader.load(getClass().getResource("wydarzenia.fxml"));
+    	FXMLLoader loader = new FXMLLoader(getClass().getResource("wydarzenia.fxml"));
+        Parent root = loader.load();
+  	  	wydarzeniaController = loader.getController();
+  	  	wydarzeniaController.setDataManager(dm);
   	  	stage = (Stage)((Node)event.getSource()).getScene().getWindow();
   	  	scene = new Scene(root);
   	  	stage.setScene(scene);
