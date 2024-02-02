@@ -44,16 +44,13 @@ public class kalendarzController {
 
     @FXML
     private Button rightButton;
-
-	private Parent root;
+    
 	protected Stage stage;
 	protected Scene scene;
 	@FXML
     private kontaktyController kontaktyController;
-	
 	@FXML
 	private wydarzeniaController wydarzeniaController;
-    
     @FXML
     private void initialize() {
         currentYearMonth = YearMonth.now();

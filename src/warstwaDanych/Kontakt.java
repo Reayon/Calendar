@@ -1,12 +1,14 @@
 package warstwaDanych;
 
+import java.util.ArrayList;
+
 public class Kontakt implements Comparable<Kontakt> {
 
 	private String imie;
 	private String nazwisko;
 	private int nr;
 	private String email;
-	private Wydarzenia wydarzenie;
+	private ArrayList<Wydarzenia> wydarzenia;
 	private int id;
 	
 	public Kontakt(String imie, String nazwisko, int nr_tel, String email) {
@@ -14,6 +16,7 @@ public class Kontakt implements Comparable<Kontakt> {
 		this.nazwisko = nazwisko;
 		this.nr = nr_tel;
 		this.email = email;
+		wydarzenia = new ArrayList<Wydarzenia>();
 	}
 
 	// Settery
@@ -38,7 +41,7 @@ public class Kontakt implements Comparable<Kontakt> {
 	}
 	
 	public void setWydarzenie(Wydarzenia w) {
-		this.wydarzenie = w;
+		this.wydarzenia.add(w);
 	}
 
 	// Gettery
@@ -62,25 +65,36 @@ public class Kontakt implements Comparable<Kontakt> {
 		return id;
 	}
 	
-	public Wydarzenia getWydarzenie()
-	{
-		return this.wydarzenie;
+	public Wydarzenia getExactWydarzenie(int i) {
+		return wydarzenia.get(i);
 	}
 	
-	public void dropWydarzenie()
-	{
-		this.wydarzenie = null;
+	public int getWydarzeniaSize() {
+		return wydarzenia.size();
 	}
 	
-	public String getStringWydarzenie()
+	public void dropExactWydarzenie(Wydarzenia w) {
+		for(int i=0;i<getWydarzeniaSize(); i++) {
+			if(this.wydarzenia.get(i).equals(w)) {
+				wydarzenia.remove(i);
+			}
+		} 
+	}
+	
+	public String getStringWydarzenia()
 	{
-		if(wydarzenie==null)
+		String tekst = "";
+		if(wydarzenia.isEmpty())
 		{
-			return "Nie przypisano wydarzenia";
+			return "brak przypisanych wydarzeń";
 		}
 		else
 		{
-			return wydarzenie.getNazwa()+" "+ wydarzenie.getData();
+			tekst = "\nPrzypisane wydarzenia: \n";
+		for (int i = 0; i < getWydarzeniaSize(); i++) {
+			tekst += Integer.toString(i+1)+ ". " + wydarzenia.get(i)+" ";
+			tekst += "\n";
+		} return tekst;
 		}
 	}
 
@@ -93,7 +107,7 @@ public class Kontakt implements Comparable<Kontakt> {
 	}
 	
 	public String toStringZWydarzeniem() {
-		return toString()+" "+getStringWydarzenie();
+		return toString()+" "+getStringWydarzenia();
 	}
 	
 	public boolean equals(Object other) {
@@ -109,6 +123,15 @@ public class Kontakt implements Comparable<Kontakt> {
 				}
 			}
 		}return false;
+	}
+	
+	public boolean equalsWydarzenia(Object o) {
+		Wydarzenia w = (Wydarzenia) o;
+		for(int i=0;i<getWydarzeniaSize(); i++) {
+			if(this.wydarzenia.get(i).equals(w)) {
+				return true;
+			}
+		} return false;
 	} 
 
 	public int compareTo(Kontakt k) {

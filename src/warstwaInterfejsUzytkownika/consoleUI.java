@@ -32,9 +32,6 @@ public class consoleUI {
 		System.out.println("7 Edytuj wydarzenia");
 		System.out.println("8 Posortuj wydarzenia");
 		System.out.println("9 Przypisanie kontaktu do wydarzenia");
-		System.out.println("10 Pliczek");
-		System.out.println("11 Odczyt");
-		System.out.println("12 Czysc");
 		System.out.println("0 Wyjdz");
 		
 		int wybor1 = sc1.nextInt();
@@ -145,20 +142,6 @@ public class consoleUI {
 			System.out.println("Podaj nr id wydarzenia");
 			int nr2 = sc1.nextInt();
 			dm.assignKontaktToWydarzenia(nr1, nr2);
-			break;
-		case 10:
-			bufor buforek = new bufor();
-			System.out.println("Napisz coś");
-			String zapisSkanera = skaner.next();
-			buforek.zapisZapytan(zapisSkanera);
-			break;
-		case 11:
-			bufor buforek1 = new bufor();
-			buforek1.odczytZapytan();
-			break;
-		case 12:
-			bufor buforek2 = new bufor();
-			buforek2.czyscPlik();
 			break;
 		case 0: 
 			System.out.println("Do widzenia");

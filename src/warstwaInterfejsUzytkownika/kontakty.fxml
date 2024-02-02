@@ -24,9 +24,9 @@
       </VBox>
       <ToolBar prefHeight="40.0" prefWidth="600.0">
         <items>
-          <Button mnemonicParsing="false" text="Dodaj" />
+          <Button mnemonicParsing="false" onAction="#onAddContactButtonClicked" text="Dodaj" />
             <Button layoutX="10.0" layoutY="13.0" mnemonicParsing="false" text="Usuń" />
-            <Button layoutX="66.0" layoutY="13.0" mnemonicParsing="false" text="Edytuj" />
+            <Button layoutX="66.0" layoutY="13.0" mnemonicParsing="false" onAction="#onEditContactButtonClicked" text="Edytuj" />
         </items>
       </ToolBar>
       <ButtonBar layoutX="400.0" layoutY="-1.0" prefHeight="40.0" prefWidth="200.0">

@@ -126,7 +126,7 @@ public class Wydarzenia implements Comparable<Wydarzenia> {
 	
 	public String toString() {
 
-		return nazwa + " " + miejsce + " " + data + " " + godzina + " " + id +" "+ getKontaktyImieNazwisko();
+		return nazwa + " " + miejsce + " " + data + " " + godzina + " " + id +" "+ getKontakty();
 	}
 	
 	public String toStringCUI() {
