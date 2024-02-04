@@ -1,10 +1,12 @@
 package warstwaInterfejsUzytkownika;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -17,6 +19,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
@@ -28,8 +31,16 @@ import warstwaLogiki.dataManager;
 
 public class kalendarzController {
 	protected dataManager dm = new dataManager();
+	
+	private consoleUI cui = new consoleUI(dm);
+	
+	public Scanner sc = new Scanner(System.in).useDelimiter("\n");
+	
 	private YearMonth currentYearMonth;
 
+	@FXML
+	private MenuItem wydarzenia;
+	
     @FXML
     private Label miesiac;
 
@@ -157,6 +168,5 @@ public class kalendarzController {
   	  	scene = new Scene(root);
   	  	stage.setScene(scene);
   	  	stage.show();
-  }
-    
+    } 
 }

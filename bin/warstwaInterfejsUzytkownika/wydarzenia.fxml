@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ButtonBar?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="warstwaInterfejsUzytkownika.wydarzeniaController">
    <children>
@@ -18,22 +22,43 @@
                   <TableColumn fx:id="miejsceColumn" editable="false" prefWidth="95.0" resizable="false" text="Miejsce" />
                   <TableColumn fx:id="dataColumn" editable="false" prefWidth="67.0" resizable="false" text="Data" />
                   <TableColumn fx:id="godzinaColumn" editable="false" prefWidth="97.0" resizable="false" text="Godzina" />
-                  <TableColumn fx:id="kontaktColumn" editable="false" prefWidth="138.0" resizable="false" text="Kontakt" />
+                  <TableColumn fx:id="kontaktColumn" editable="false" prefWidth="138.0" resizable="false" text="Kontakty" />
                </columns>
             </TableView>
          </children>
       </VBox>
-      <ToolBar prefHeight="40.0" prefWidth="600.0">
-         <items>
-            <Button mnemonicParsing="false" text="Dodaj" />
-            <Button layoutX="10.0" layoutY="13.0" mnemonicParsing="false" text="Usuń" />
-            <Button layoutX="66.0" layoutY="13.0" mnemonicParsing="false" text="Edytuj" />
-         </items>
-      </ToolBar>
-      <ButtonBar layoutX="400.0" layoutY="-1.0" prefHeight="40.0" prefWidth="200.0">
-         <buttons>
-            <Button layoutX="135.0" layoutY="30.0" mnemonicParsing="false" onAction="#switchToKalendarz" prefHeight="20.0" prefWidth="96.0" text="Kalendarz" />
-         </buttons>
-      </ButtonBar>
+      <MenuBar layoutY="2.0" prefHeight="25.0" prefWidth="600.0">
+        <menus>
+          <Menu mnemonicParsing="false" text="Zarządzanie wydarzeniami">
+            <items>
+              <MenuItem mnemonicParsing="false" onAction="#onAddWydarzenieButtonClicked" text="Dodaj">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="D" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator></MenuItem>
+                  <MenuItem fx:id="usunW" mnemonicParsing="false" onAction="#onUsunButtonClicked" text="Usuń">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="U" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator></MenuItem>
+                  <MenuItem fx:id="editW" mnemonicParsing="false" onAction="#onEditWydarzenieButtonClicked" text="Edytuj">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="E" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator></MenuItem>
+                  <MenuItem mnemonicParsing="false" text="Wczytaj dane z pliku XML" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Pomoc">
+            <items>
+              <MenuItem mnemonicParsing="false" text="O programie" />
+                  <MenuItem mnemonicParsing="false" text="Dokumentacja" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+      <Text layoutX="17.0" layoutY="63.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Wydarzenia" wrappingWidth="567.0">
+         <font>
+            <Font name="System Bold" size="34.0" />
+         </font>
+      </Text>
+      <Button layoutX="452.0" layoutY="37.0" mnemonicParsing="false" onAction="#switchToKalendarz" text="Powrót do kalendarza" />
    </children>
 </AnchorPane>

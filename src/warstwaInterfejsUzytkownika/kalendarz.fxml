@@ -12,14 +12,14 @@
 
 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="386.0" prefWidth="601.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="warstwaInterfejsUzytkownika.kalendarzController">
    <children>
-      <Label fx:id="miesiac" alignment="CENTER" layoutX="161.0" layoutY="60.0" prefHeight="32.0" prefWidth="139.0" text="Miesiac">
+      <Label fx:id="miesiac" alignment="CENTER" layoutX="161.0" layoutY="53.0" prefHeight="32.0" prefWidth="139.0" text="Miesiac" textAlignment="CENTER">
          <font>
-            <Font size="18.0" />
+            <Font name="System Bold" size="26.0" />
          </font>
       </Label>
-      <Label fx:id="rok" alignment="CENTER" layoutX="300.0" layoutY="60.0" prefHeight="31.0" prefWidth="123.0" text="Rok">
+      <Label fx:id="rok" alignment="CENTER" layoutX="284.0" layoutY="53.0" prefHeight="31.0" prefWidth="123.0" text="Rok" textAlignment="CENTER">
          <font>
-            <Font size="18.0" />
+            <Font name="System Bold" size="26.0" />
          </font>
       </Label>
       <Button fx:id="rightButton" layoutX="214.0" layoutY="345.0" mnemonicParsing="false" onAction="#showPreviousMonth" text="&lt;&lt;" />
@@ -98,10 +98,11 @@
             <Label prefHeight="26.0" prefWidth="55.0" text="Nd" />
          </children>
       </HBox>
-      <ToolBar prefHeight="40.0" prefWidth="601.0">
+      <ToolBar prefHeight="25.0" prefWidth="601.0">
         <items>
           <Button mnemonicParsing="false" onAction="#switchToKontakty" text="Kontakty" />
-            <Button layoutX="10.0" layoutY="13.0" mnemonicParsing="false" onAction="#switchToWydarzenia" text="Wydarzenia" />
+            <Button mnemonicParsing="false" onAction="#switchToWydarzenia" text="Wydarzenia" />
+            <Button mnemonicParsing="false" text="O programie" />
         </items>
       </ToolBar>
    </children>
