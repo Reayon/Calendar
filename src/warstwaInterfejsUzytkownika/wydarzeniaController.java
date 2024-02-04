@@ -17,10 +17,12 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
@@ -30,7 +32,9 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import warstwaDanych.Kontakt;
 import warstwaDanych.Wydarzenia;
 import warstwaLogiki.dataManager;
@@ -54,6 +58,9 @@ public class wydarzeniaController extends kalendarzController {
     
     @FXML
     private TableColumn<Wydarzenia, ArrayList<Kontakt>> kontaktColumn;
+    
+    @FXML
+    private TableColumn<Wydarzenia, Color> colorColumn;
     
     @FXML
     private MenuItem usunW;
@@ -85,21 +92,28 @@ public class wydarzeniaController extends kalendarzController {
     	dataColumn.setCellValueFactory(new PropertyValueFactory<>("data"));
     	godzinaColumn.setCellValueFactory(new PropertyValueFactory<>("godzina"));
     	kontaktColumn.setCellValueFactory(new PropertyValueFactory<>("kontaktyImieNazwisko"));
+    	colorColumn.setCellValueFactory(new PropertyValueFactory<>("color"));
         
         Platform.runLater(()->{
         	
+        
         for(int i = 0; i<dm.pobierzListeWydarzen().size();i++) {
         	Wydarzenia wydarzenie = new Wydarzenia(dm.pobierzListeWydarzen().get(i).getNazwa(),
         			dm.pobierzListeWydarzen().get(i).getMiejsce(),
         			dm.pobierzListeWydarzen().get(i).getData(),
-        			dm.pobierzListeWydarzen().get(i).getGodzina());
+        			dm.pobierzListeWydarzen().get(i).getGodzina(),
+        			dm.pobierzListeWydarzen().get(i).getColor());
         	for(int j=0; j<dm.pobierzListeWydarzen().get(i).getKontaktySize(); j++) {
         		wydarzenie.setKontakt(dm.pobierzListeWydarzen().get(i).getExactKontakt(j));
         	}
         	listaWydarzen.add(wydarzenie);
+        	
         }
         tabelaWydarzen.setItems(listaWydarzen);
+        
+        //tabelarow.getItem(listaWydarzen.get(i));
         });
+        tabelaWydarzen.setStyle("-fx-background-color: transparent;");
     }
     
     @FXML
@@ -125,8 +139,10 @@ public class wydarzeniaController extends kalendarzController {
 
         TextField godzinaTextField = new TextField();
         godzinaTextField.setPromptText("Godzina");
+        
+        ColorPicker colorPick = new ColorPicker();
 
-        dialogPane.setContent(new ScrollPane(new VBox(8, nazwaTextField, miejsceTextField, dataTextField, godzinaTextField)));
+        dialogPane.setContent(new ScrollPane(new VBox(8, nazwaTextField, miejsceTextField, dataTextField, godzinaTextField, colorPick)));
 
         Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
         okButton.setDisable(true);
@@ -153,7 +169,8 @@ public class wydarzeniaController extends kalendarzController {
                         nazwaTextField.getText(),
                         miejsceTextField.getText(),
                         dataTextField.getText(),
-                        godzinaTextField.getText()
+                        godzinaTextField.getText(),
+                        colorPick.getValue()
                 );
             }
             return null;
@@ -163,7 +180,7 @@ public class wydarzeniaController extends kalendarzController {
         result.ifPresent(wydarzenie -> {
             listaWydarzen.add(wydarzenie);
             try {
-				dm.addWydarzenie(wydarzenie.getNazwa(), wydarzenie.getMiejsce(), wydarzenie.getData(), wydarzenie.getGodzina());
+				dm.addWydarzenieZKolorem(wydarzenie.getNazwa(), wydarzenie.getMiejsce(), wydarzenie.getData(), wydarzenie.getGodzina(), wydarzenie.getColor());
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -197,36 +214,43 @@ public class wydarzeniaController extends kalendarzController {
 
             TextField godzinaTextField = new TextField(selectedWydarzenie.getGodzina());
             godzinaTextField.setPromptText("Godzina");
+            
+            ColorPicker colorPick = new ColorPicker();
+            //colorPick.get
 
-            dialogPane.setContent(new ScrollPane(new VBox(8, nazwaTextField, miejsceTextField, dataTextField, godzinaTextField)));
+            dialogPane.setContent(new ScrollPane(new VBox(8, nazwaTextField, miejsceTextField, dataTextField, godzinaTextField, colorPick)));
 
             Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
             okButton.setDisable(true);
 
             nazwaTextField.textProperty().addListener((observable, oldValue, newValue) ->
                     okButton.setDisable(newValue.trim().isEmpty() || miejsceTextField.getText().isEmpty() ||
-                    		dataTextField.getText().isEmpty() || godzinaTextField.getText().isEmpty()));
+                    		dataTextField.getText().isEmpty() || godzinaTextField.getText().isEmpty() || colorPick.isPressed()));
 
             miejsceTextField.textProperty().addListener((observable, oldValue, newValue) ->
                     okButton.setDisable(nazwaTextField.getText().isEmpty() || newValue.trim().isEmpty() ||
-                    		dataTextField.getText().isEmpty() || godzinaTextField.getText().isEmpty()));
+                    		dataTextField.getText().isEmpty() || godzinaTextField.getText().isEmpty() || colorPick.isPressed()));
 
             dataTextField.textProperty().addListener((observable, oldValue, newValue) ->
                     okButton.setDisable(nazwaTextField.getText().isEmpty() || miejsceTextField.getText().isEmpty() ||
-                            newValue.trim().isEmpty() || godzinaTextField.getText().isEmpty()));
+                            newValue.trim().isEmpty() || godzinaTextField.getText().isEmpty() || colorPick.isPressed()));
 
             godzinaTextField.textProperty().addListener((observable, oldValue, newValue) ->
                     okButton.setDisable(nazwaTextField.getText().isEmpty() || miejsceTextField.getText().isEmpty() ||
-                    		dataTextField.getText().isEmpty() || newValue.trim().isEmpty()));
+                    		dataTextField.getText().isEmpty() || newValue.trim().isEmpty() || colorPick.isPressed()));
 
+            //colorPick.isPressed().okButton.setDisable();
+            
             dialog.setResultConverter(dialogButton -> {
                 if (dialogButton == ButtonType.OK) {
                     return new Wydarzenia(
                     		nazwaTextField.getText(),
                     		miejsceTextField.getText(),
                     		dataTextField.getText(),
-                    		godzinaTextField.getText()
-                    );
+                    		godzinaTextField.getText(),
+                    		colorPick.getValue(),
+                    		selectedWydarzenie.getID()
+                    ); 
                 }
                 return null;
             });
@@ -236,7 +260,7 @@ public class wydarzeniaController extends kalendarzController {
                 listaWydarzen.remove(selectedWydarzenie);
                 listaWydarzen.add(editedWydarzenie);
                 try {
-                    dm.editWydarzenie(editedWydarzenie.getNazwa(), editedWydarzenie.getMiejsce(), editedWydarzenie.getData(), editedWydarzenie.getGodzina(), tabelaWydarzen.getSelectionModel().getSelectedIndex() + 2);
+                    dm.editWydarzenieZKolorem(editedWydarzenie.getNazwa(), editedWydarzenie.getMiejsce(), editedWydarzenie.getData(), editedWydarzenie.getGodzina(), editedWydarzenie.getColor(), editedWydarzenie.getID(), tabelaWydarzen.getSelectionModel().getSelectedIndex() + 2);
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
@@ -259,7 +283,7 @@ public class wydarzeniaController extends kalendarzController {
             result.ifPresent(buttonType -> {
                 if (buttonType == ButtonType.OK) {
                     try {
-                        dm.removeWydarzenie(selectedIdx+1);
+                        dm.removeWydarzenie(selectedWydarzenie.getID()+1);
                         tabelaWydarzen.getItems().remove(selectedIdx);
                     } catch (SQLException e) {
                         e.printStackTrace();

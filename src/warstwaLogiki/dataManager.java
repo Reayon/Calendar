@@ -7,6 +7,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import javafx.scene.paint.Color;
 import warstwaDanych.Kontakt;
 import warstwaDanych.Wydarzenia;
 
@@ -153,6 +154,19 @@ public class dataManager {
 		}
 	}
 	
+	public void addWydarzenieZKolorem(String nazwa, String miejsce, String data, String godzina, Color color) throws SQLException {
+		
+		if(equalsArrayListWydarzenia(new Wydarzenia(nazwa, miejsce, data, godzina, color))==false) {
+			Wydarzenia wo = new Wydarzenia(nazwa, miejsce, data, godzina, color);
+			db.dodajWydarzenie(wydarzenia, wo);
+			wydarzenia.add(wo);
+			xml.zapisWydarzeniaDoXML(wydarzenia);
+			
+		} else {
+			System.out.println("Takie wydarzenie już istnieje");
+		}
+	}
+	
 	public void editWydarzenie(String nazwa, String miejsce, String data, String godzina, int nr) throws SQLException {
 		
 		wydarzenia.get(nr-1).setNazwa(nazwa);
@@ -166,10 +180,25 @@ public class dataManager {
 		System.out.println("Pomyślnie edytowano wydarzenie");
 	}
 	
+	public void editWydarzenieZKolorem(String nazwa, String miejsce, String data, String godzina, Color color, int id, int nr) throws SQLException {
+		
+		wydarzenia.get(nr-1).setNazwa(nazwa);
+		wydarzenia.get(nr-1).setMiejsce(miejsce);
+		wydarzenia.get(nr-1).setData(data);
+		wydarzenia.get(nr-1).setGodzina(godzina);
+		wydarzenia.get(nr-1).setColor(color);
+		wydarzenia.get(nr-1).setID(id);
+		
+		db.edytujWydarzenie(wydarzenia.get(nr-1));
+		xml.zapisWydarzeniaDoXML(wydarzenia);
+		
+		System.out.println("Pomyślnie edytowano wydarzenie");
+	}
+	
 	public void removeWydarzenie(int nr) throws SQLException {
 		
-		db.usunAssignWydarzenie(wydarzenia.get(nr-1));
-		db.usunWydarzenie(wydarzenia.get(nr-1));
+		db.usunAssignWydarzenie(wydarzenia.get(nr-1).getID());
+		db.usunWydarzenie(wydarzenia.get(nr-1).getID());
 		for(int i=0;i<kontakty.size();i++) {
             for(int j=0;j<wydarzenia.get(nr-1).getKontaktySize();j++) {
                 if(kontakty.get(i).equals(wydarzenia.get(nr-1).getExactKontakt(j))) {

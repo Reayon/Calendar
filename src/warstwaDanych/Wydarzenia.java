@@ -3,12 +3,15 @@ package warstwaDanych;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import javafx.scene.paint.Color;
+
 public class Wydarzenia implements Comparable<Wydarzenia> {
 	
 	private String nazwa;
 	private String miejsce;
 	private String data;
 	private String godzina;
+	private Color color;
 	private ArrayList<Kontakt> kontakty;
 	private int id;
 	
@@ -18,6 +21,25 @@ public class Wydarzenia implements Comparable<Wydarzenia> {
 		this.miejsce = miejsce;
 		this.data = data;
 		this.godzina = godzina;
+		kontakty = new ArrayList<Kontakt>();
+	}
+	
+	public Wydarzenia(String nazwa, String miejsce, String data, String godzina, Color color) {
+		this.nazwa = nazwa;
+		this.miejsce = miejsce;
+		this.data = data;
+		this.godzina = godzina;
+		this.color = color;
+		kontakty = new ArrayList<Kontakt>();
+	}
+	
+	public Wydarzenia(String nazwa, String miejsce, String data, String godzina, Color color, int id) {
+		this.nazwa = nazwa;
+		this.miejsce = miejsce;
+		this.data = data;
+		this.godzina = godzina;
+		this.color = color;
+		this.id = id;
 		kontakty = new ArrayList<Kontakt>();
 	}
 
@@ -41,6 +63,11 @@ public class Wydarzenia implements Comparable<Wydarzenia> {
 	public void setID(int i)
 	{
 		id = i;
+	}
+	
+	public void setColor(Color c)
+	{
+		color = c;
 	}
 	
 	public void setKontakt(Kontakt k)
@@ -67,6 +94,10 @@ public class Wydarzenia implements Comparable<Wydarzenia> {
 	
 	public int getID() {
 		return id;
+	}
+	
+	public Color getColor() {
+		return color;
 	}
 	
 	public ArrayList<Kontakt> getArrayKontakt() {

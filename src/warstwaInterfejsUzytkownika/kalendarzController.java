@@ -221,4 +221,11 @@ public class kalendarzController {
         stage.setScene(scene);
         stage.show();
     }
+    
+    public static String toCssColor(Color color) {
+        return "rgba(" + Math.round(255 * color.getRed()) + ","
+                + Math.round(255 * color.getGreen()) + ","
+                + Math.round(255 * color.getBlue()) + ","
+                + color.getOpacity() + ")";
+    }
 }

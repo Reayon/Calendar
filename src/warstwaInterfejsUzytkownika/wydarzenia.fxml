@@ -18,11 +18,12 @@
          <children>
             <TableView fx:id="tabelaWydarzen" prefHeight="348.0" prefWidth="481.0">
                <columns>
-                  <TableColumn fx:id="nazwaColumn" editable="false" prefWidth="169.0" resizable="false" text="Nazwa" />
-                  <TableColumn fx:id="miejsceColumn" editable="false" prefWidth="95.0" resizable="false" text="Miejsce" />
-                  <TableColumn fx:id="dataColumn" editable="false" prefWidth="67.0" resizable="false" text="Data" />
-                  <TableColumn fx:id="godzinaColumn" editable="false" prefWidth="97.0" resizable="false" text="Godzina" />
-                  <TableColumn fx:id="kontaktColumn" editable="false" prefWidth="138.0" resizable="false" text="Kontakty" />
+                  <TableColumn fx:id="nazwaColumn" editable="false" prefWidth="134.0" resizable="false" text="Nazwa" />
+                  <TableColumn fx:id="miejsceColumn" editable="false" prefWidth="92.0" resizable="false" text="Miejsce" />
+                  <TableColumn fx:id="dataColumn" editable="false" prefWidth="84.0" resizable="false" text="Data" />
+                  <TableColumn fx:id="godzinaColumn" editable="false" prefWidth="66.0" resizable="false" text="Godzina" />
+                  <TableColumn fx:id="kontaktColumn" editable="false" prefWidth="129.0" resizable="false" text="Kontakty" />
+                  <TableColumn fx:id="colorColumn" editable="false" prefWidth="61.0" resizable="false" text="Kolor" />
                </columns>
             </TableView>
          </children>

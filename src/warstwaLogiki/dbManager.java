@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+import javafx.scene.paint.Color;
 import warstwaDanych.Kontakt;
 import warstwaDanych.Wydarzenia;
 
@@ -132,8 +133,9 @@ public class dbManager {
 				String miejsce = result.getString("miejsce");
 				String data = result.getString("data");
 				String godzina = result.getString("godzina");
+				String c = result.getString("kolor");
 				int id = result.getInt("ID_wydarzenia");
-				Wydarzenia wo = new Wydarzenia(nazwa, miejsce, data, godzina);
+				Wydarzenia wo = new Wydarzenia(nazwa, miejsce, data, godzina, Color.valueOf(c));
 				wo.setID(id);
 				w.add(wo);
 			}
@@ -153,27 +155,25 @@ public class dbManager {
 			w.setID(id);
 		}
 		
-		String sql = "INSERT INTO wydarzenia (ID_wydarzenia, nazwa, miejsce, data, godzina) VALUES ('"+id+"', '"+w.getNazwa()+"', '"+w.getMiejsce()+"', '"+w.getData()+"', '"+w.getGodzina()+"');\n";
+		String sql = "INSERT INTO wydarzenia (ID_wydarzenia, nazwa, miejsce, data, godzina) VALUES ('"+id+"', '"+w.getNazwa()+"', '"+w.getMiejsce()+"', '"+w.getData()+"', '"+w.getGodzina()+"', '"+w.getColor()+"');\n";
 		licznikZapytan++;
 		bufor.zapisZapytan(sql);
 	}
 	
 	public void edytujWydarzenie(Wydarzenia w) throws SQLException{
 		int id = w.getID();
-		String sql = "UPDATE wydarzenia SET nazwa = '"+w.getNazwa()+"', miejsce = '"+w.getMiejsce()+"', data = '"+w.getData()+"', godzina = '"+w.getGodzina()+"' WHERE ID_wydarzenia = "+id+";\n";
+		String sql = "UPDATE wydarzenia SET nazwa = '"+w.getNazwa()+"', miejsce = '"+w.getMiejsce()+"', data = '"+w.getData()+"', godzina = '"+w.getGodzina()+"', kolor = '"+w.getColor()+"' WHERE ID_wydarzenia = "+id+";\n";
 		licznikZapytan++;
 		bufor.zapisZapytan(sql);
 	}
 	
-	public void usunWydarzenie(Wydarzenia w) throws SQLException{
-		int id = w.getID();
+	public void usunWydarzenie(int id) throws SQLException{
 		String sql = "DELETE FROM wydarzenia WHERE ID_wydarzenia = '"+id+"';\n";
 		licznikZapytan++;
 		bufor.zapisZapytan(sql);
 	}
 	
-	public void usunAssignWydarzenie(Wydarzenia w) throws SQLException{
-		int id = w.getID();
+	public void usunAssignWydarzenie(int id) throws SQLException{
 		String sql = "DELETE FROM assign WHERE ID_wydarzenia = '"+id+"';\n";
 		licznikZapytan++;
 		bufor.zapisZapytan(sql);
