@@ -2,6 +2,8 @@ package warstwaLogiki;
 
 import java.io.FileNotFoundException;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -181,6 +183,25 @@ public class dataManager {
 		System.out.println("Pomyślnie edytowano wydarzenie");
 	}
 	
+	public ArrayList<String> getWydarzeniaDanegoDnia(LocalDate date) {
+	    ArrayList<String> wydarzeniaDanegoDnia = new ArrayList<>();
+
+	    for (Wydarzenia wydarzenie : wydarzenia) {
+	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+	        LocalDate wydarzenieDate = LocalDate.parse(wydarzenie.getData(), formatter);
+
+	        if (wydarzenieDate.equals(date)) {
+	            String eventInfo = String.format(
+	                "Nazwa: "+wydarzenie.getNazwa()+"\nMiejsce: "+wydarzenie.getMiejsce()+"\nData: "+wydarzenie.getData()+"\nGodzina: "+wydarzenie.getGodzina()+"\n"
+	            );
+
+	            wydarzeniaDanegoDnia.add(eventInfo);
+	        }
+	    }
+
+	    return wydarzeniaDanegoDnia;
+	}
+	
 	public void assignKontaktToWydarzenia(int nr1, int nr2) throws SQLException {
 		
 		if(kontakty.get(nr1-1).equalsWydarzenia(wydarzenia.get(nr2-1))==false) {
@@ -192,42 +213,6 @@ public class dataManager {
 		} else {
 			System.out.println("Ten kontakt został już dodany do tego wydarzenia");
 		}
-		
-		
-		/*kontakty.get(nr1-1).setWydarzenie(wydarzenia.get(nr2-1));
-
-		if(wydarzenia.get(nr2-1).equalsKontakty(kontakty.get(nr1-1))==false) {
-		wydarzenia.get(nr2-1).setKontakt(kontakty.get(nr1-1));
-		db.przypiszKontaktdoWydarzenia(kontakty.get(nr1-1).getID(), wydarzenia.get(nr2-1).getID());
-		for(int i=0; i<wydarzenia.size(); i++) {
-			if(wydarzenia.get(i).equalsKontakty(kontakty.get(nr1-1))==true && i != nr2-1) {
-				if(db.polacz()!=null) {
-					db.usunAssignKontakt(kontakty.get(nr1-1));
-					wydarzenia.get(i).dropEqualKontakt(kontakty.get(nr1-1));
-					db.przypiszKontaktdoWydarzenia(kontakty.get(nr1-1).getID(), wydarzenia.get(nr2-1).getID());
-					xml.zapisKontaktowDoXML(kontakty);
-					xml.zapisWydarzeniaDoXML(wydarzenia);
-				} else {
-					wydarzenia.get(i).dropEqualKontakt(kontakty.get(nr1-1));
-					xml.zapisKontaktowDoXML(kontakty);
-					xml.zapisWydarzeniaDoXML(wydarzenia);
-				}
-			}
-		}
-		xml.zapisKontaktowDoXML(kontakty);
-		xml.zapisWydarzeniaDoXML(wydarzenia);
-		} else {
-			System.out.println("Ten kontakt został już dodany do tego wydarzenia");
-			for(int i=0; i<wydarzenia.size(); i++) {
-				if(wydarzenia.get(i).equalsKontakty(kontakty.get(nr1-1))==true && i != nr2-1) {
-					wydarzenia.get(i).dropEqualKontakt(kontakty.get(nr1-1));
-					xml.zapisKontaktowDoXML(kontakty);
-					xml.zapisWydarzeniaDoXML(wydarzenia);
-				}
-			}
-			xml.zapisKontaktowDoXML(kontakty);
-	xml.zapisWydarzeniaDoXML(wydarzenia);
-		}*/
 	}
 	
 	public void sortujKontakty(int wybor) throws SQLException {

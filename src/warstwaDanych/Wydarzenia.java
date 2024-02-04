@@ -11,6 +11,7 @@ public class Wydarzenia implements Comparable<Wydarzenia> {
 	private String godzina;
 	private ArrayList<Kontakt> kontakty;
 	private int id;
+	
 
 	public Wydarzenia(String nazwa, String miejsce, String data, String godzina) {
 		this.nazwa = nazwa;

@@ -19,6 +19,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -47,8 +48,22 @@ public class kontaktyController extends kalendarzController {
 
     @FXML
     private TableColumn<Kontakt, String> emailColumn;
+    
+    @FXML
+    private	MenuItem Edytuj;
+
+    @FXML
+    private MenuItem Usun;
 	
     public void initialize() {
+
+    	Edytuj.setDisable(true);
+        Usun.setDisable(true);
+
+        tabelaKontaktow.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+        	Edytuj.setDisable(newValue == null);
+            Usun.setDisable(newValue == null);
+        });
     	imieColumn.setCellValueFactory(new PropertyValueFactory<>("imie"));
         nazwiskoColumn.setCellValueFactory(new PropertyValueFactory<>("nazwisko"));
         nrTelColumn.setCellValueFactory(new PropertyValueFactory<>("nr"));
@@ -67,7 +82,7 @@ public class kontaktyController extends kalendarzController {
         });
     }
         @FXML
-        private void onAddContactButtonClicked() {
+        private void addKontakt() {
         	Dialog<Kontakt> dialog = new Dialog<>();
             dialog.setTitle("Dodaj nowy kontakt");
             dialog.setHeaderText("Wprowadź dane nowego kontaktu:");
@@ -136,7 +151,8 @@ public class kontaktyController extends kalendarzController {
         }
         
         @FXML
-        private void onEditContactButtonClicked() {
+        private void editKontakt() {
+        	
             Kontakt selectedContact = tabelaKontaktow.getSelectionModel().getSelectedItem();
             if (selectedContact != null) {
                 Dialog<Kontakt> dialog = new Dialog<>();
@@ -204,15 +220,18 @@ public class kontaktyController extends kalendarzController {
                         e.printStackTrace();
                     }
                 });
+            }else {
+            	showSelectionAlert("Edytuj kontakt", "Wybierz kontakt do edycji.");
             }
         }
         
         @FXML
-        private void onUsunButtonClicked() {
+        private void deleteKontakt() {
             Kontakt selectedContact = tabelaKontaktow.getSelectionModel().getSelectedItem();
             int selectedIdx = tabelaKontaktow.getSelectionModel().getSelectedIndex();
             if (selectedContact != null) {
             	Alert alert = new Alert(AlertType.CONFIRMATION);
+                Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
                 alert.setTitle("Potwierdzenie usunięcia");
                 alert.setHeaderText("Czy na pewno chcesz usunąć wybrany kontakt?");
                 alert.setContentText("Tej operacji nie można cofnąć.");
@@ -228,7 +247,17 @@ public class kontaktyController extends kalendarzController {
                         }
                     }
                 });
+            }else {
+                showSelectionAlert("Usuń kontakt", "Wybierz kontakt do usunięcia.");
             }
+        }
+        
+        private void showSelectionAlert(String title, String content) {
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle(title);
+            alert.setHeaderText(null);
+            alert.setContentText(content);
+            alert.showAndWait();
         }
         
         public void switchToKalendarz(ActionEvent event) throws SQLException{
