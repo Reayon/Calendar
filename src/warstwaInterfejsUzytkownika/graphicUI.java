@@ -26,12 +26,12 @@ public class graphicUI extends Application {
 	        dm.odczytajDane();
 	        kalendarzController1.setDataManager(dm);
 	        Scene scene = new Scene(root);
-			//scene.getStylesheets().add(getClass().getResource("Glowna.css").toExternalForm());
+			scene.getStylesheets().add(getClass().getResource("Glowna.css").toExternalForm());
 			Image icon = new Image("calendar-icon.png");
+			stage.setResizable(false);
 			stage.getIcons().add(icon);
 			stage.setTitle("Organizer by Filip Banasiak i Dawid Centkowski");
 			stage.setScene(scene);
-			stage.setResizable(false);
 			stage.show();
 		} catch (IOException e) {
 			e.printStackTrace();

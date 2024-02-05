@@ -4,6 +4,7 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.input.KeyCodeCombination?>
@@ -18,12 +19,13 @@
          <children>
             <TableView fx:id="tabelaWydarzen" prefHeight="348.0" prefWidth="481.0">
                <columns>
-                  <TableColumn fx:id="nazwaColumn" editable="false" prefWidth="134.0" resizable="false" text="Nazwa" />
-                  <TableColumn fx:id="miejsceColumn" editable="false" prefWidth="92.0" resizable="false" text="Miejsce" />
-                  <TableColumn fx:id="dataColumn" editable="false" prefWidth="84.0" resizable="false" text="Data" />
-                  <TableColumn fx:id="godzinaColumn" editable="false" prefWidth="66.0" resizable="false" text="Godzina" />
-                  <TableColumn fx:id="kontaktColumn" editable="false" prefWidth="129.0" resizable="false" text="Kontakty" />
-                  <TableColumn fx:id="colorColumn" editable="false" prefWidth="61.0" resizable="false" text="Kolor" />
+                  <TableColumn fx:id="nazwaColumn" editable="false" prefWidth="159.0" resizable="false" text="Nazwa" />
+                  <TableColumn fx:id="miejsceColumn" editable="false" prefWidth="108.0" resizable="false" text="Miejsce" />
+                  <TableColumn fx:id="dataColumn" editable="false" prefWidth="70.0" resizable="false" text="Data" />
+                  <TableColumn fx:id="godzinaColumn" editable="false" prefWidth="57.0" resizable="false" text="Godzina" />
+                  <TableColumn fx:id="kontaktColumn" editable="false" prefWidth="116.0" resizable="false" text="Kontakty" />
+                  <TableColumn fx:id="colorColumn" prefWidth="56.0" text="Kolor" />
+                  <TableColumn fx:id="idColumn" prefWidth="75.0" text="id" />
                </columns>
             </TableView>
          </children>
@@ -32,24 +34,26 @@
         <menus>
           <Menu mnemonicParsing="false" text="Zarządzanie wydarzeniami">
             <items>
-              <MenuItem mnemonicParsing="false" onAction="#onAddWydarzenieButtonClicked" text="Dodaj">
+              <MenuItem mnemonicParsing="false" onAction="#dodajWydarzenieGUI" text="Dodaj">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="D" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator></MenuItem>
-                  <MenuItem fx:id="usunW" mnemonicParsing="false" onAction="#onUsunButtonClicked" text="Usuń">
+                  <MenuItem fx:id="usunW" mnemonicParsing="false" onAction="#usunWydarzenieGUI" text="Usuń">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="U" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator></MenuItem>
-                  <MenuItem fx:id="editW" mnemonicParsing="false" onAction="#onEditWydarzenieButtonClicked" text="Edytuj">
+                  <MenuItem fx:id="editW" mnemonicParsing="false" onAction="#edytujWydarzenieGUI" text="Edytuj">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="E" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator></MenuItem>
-                  <MenuItem mnemonicParsing="false" text="Wczytaj dane z pliku XML" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem mnemonicParsing="false" onAction="#wczytajPlik" text="Wczytaj dane z pliku XML" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Pomoc">
             <items>
-              <MenuItem mnemonicParsing="false" text="O programie" />
+              <MenuItem fx:id="aboutProgram" mnemonicParsing="false" text="O programie" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem mnemonicParsing="false" text="Dokumentacja" />
             </items>
           </Menu>

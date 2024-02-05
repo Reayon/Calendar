@@ -24,6 +24,7 @@
                 <TableColumn fx:id="nazwiskoColumn" editable="false" prefWidth="122.0" resizable="false" text="Nazwisko" />
                   <TableColumn fx:id="nrTelColumn" editable="false" prefWidth="104.0" resizable="false" text="Numer Telefonu" />
                   <TableColumn fx:id="emailColumn" editable="false" prefWidth="241.0" resizable="false" text="E-Mail" />
+                  <TableColumn fx:id="idColumn" prefWidth="75.0" text="id" />
               </columns>
             </TableView>
          </children>
@@ -45,9 +46,16 @@
                         <KeyCodeCombination alt="UP" code="U" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator></MenuItem>
                   <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem fx:id="wczytaj" mnemonicParsing="false" text="Wczytaj z pliku" />
+                  <MenuItem fx:id="wczytaj" mnemonicParsing="false" onAction="#wczytajPlik" text="Wczytaj z pliku" />
             </items>
           </Menu>
+            <Menu mnemonicParsing="false" text="Pomoc">
+               <items>
+                  <MenuItem fx:id="aboutProgram" mnemonicParsing="false" text="O programie" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem mnemonicParsing="false" text="Dokumentacja" />
+               </items>
+            </Menu>
         </menus>
       </MenuBar>
       <ButtonBar layoutX="331.0" layoutY="36.0" prefHeight="25.0" prefWidth="253.0">

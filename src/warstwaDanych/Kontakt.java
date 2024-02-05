@@ -19,6 +19,15 @@ public class Kontakt implements Comparable<Kontakt> {
 		wydarzenia = new ArrayList<Wydarzenia>();
 	}
 
+	public Kontakt(String imie, String nazwisko, int nr_tel, String email, int id) {
+		this.imie = imie;
+		this.nazwisko = nazwisko;
+		this.nr = nr_tel;
+		this.email = email;
+		this.id = id;
+		wydarzenia = new ArrayList<Wydarzenia>();
+	}
+
 	// Settery
 	public void setImie(String i) {
 		imie = i;

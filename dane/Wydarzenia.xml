@@ -1,1 +1,42 @@
-<?xml version="1.0"?><ZapisaneWydarzenia><Wydarzenie><Nazwa>Gala MMA Fighters</Nazwa><Miejsce>Gliwice</Miejsce><Data>23.08.2024</Data><Godzina>20:00</Godzina><ZapisaneKontakty><Kontakt0><Imie>Dawid</Imie><Nazwisko>Centkowski</Nazwisko><NumerTelefonu>512052718</NumerTelefonu><Email>dawid@wp.pl</Email></Kontakt0><Kontakt0><Imie>Mariusz</Imie><Nazwisko>Pudzianowski</Nazwisko><NumerTelefonu>214512</NumerTelefonu><Email>mariusz@wp.pl</Email></Kontakt0></ZapisaneKontakty></Wydarzenie><Wydarzenie><Nazwa>Lot do Hiszpanii</Nazwa><Miejsce>Hiszpania</Miejsce><Data>28.09.2024</Data><Godzina>09:00</Godzina><ZapisaneKontakty><Kontakt1><Imie>Filip</Imie><Nazwisko>Banasiak</Nazwisko><NumerTelefonu>4215664</NumerTelefonu><Email>filip@wp.pl</Email></Kontakt1></ZapisaneKontakty></Wydarzenie></ZapisaneWydarzenia>
+<?xml version="1.0"?>
+<ZapisaneWydarzenia>
+<Wydarzenie>
+<Nazwa>Gala MMA Fighters</Nazwa>
+<Miejsce>Gliwice</Miejsce>
+<Data>23.08.2024</Data>
+<Godzina>20:00</Godzina>
+<Kolor>#FFB399</Kolor>
+<ZapisaneKontakty>
+<Kontakt0>
+<ID0>1</ID0>
+<Imie>Dawid</Imie>
+<Nazwisko>Centkowski</Nazwisko>
+<NumerTelefonu>987654321</NumerTelefonu>
+<Email>Dawix9@wp.pl</Email>
+</Kontakt0>
+<Kontakt0>
+<ID1>7</ID1>
+<Imie>Mariusz</Imie>
+<Nazwisko>Pudzianowski</Nazwisko>
+<NumerTelefonu>214512</NumerTelefonu>
+<Email>mariusz12312@wp.pl</Email>
+</Kontakt0>
+</ZapisaneKontakty>
+</Wydarzenie>
+<Wydarzenie>
+<Nazwa>Lot do Hiszpanii</Nazwa>
+<Miejsce>Hiszpania</Miejsce>
+<Data>28.09.2024</Data>
+<Godzina>09:00</Godzina>
+<Kolor>#FFB399</Kolor>
+<ZapisaneKontakty>
+<Kontakt1>
+<ID0>0</ID0>
+<Imie>Filip</Imie>
+<Nazwisko>Banasiak</Nazwisko>
+<NumerTelefonu>123456789</NumerTelefonu>
+<Email>Filip@wp.pl</Email>
+</Kontakt1>
+</ZapisaneKontakty>
+</Wydarzenie>
+</ZapisaneWydarzenia>

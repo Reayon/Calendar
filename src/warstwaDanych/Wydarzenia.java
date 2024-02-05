@@ -11,7 +11,7 @@ public class Wydarzenia implements Comparable<Wydarzenia> {
 	private String miejsce;
 	private String data;
 	private String godzina;
-	private Color color;
+	private String color;
 	private ArrayList<Kontakt> kontakty;
 	private int id;
 	
@@ -23,8 +23,7 @@ public class Wydarzenia implements Comparable<Wydarzenia> {
 		this.godzina = godzina;
 		kontakty = new ArrayList<Kontakt>();
 	}
-	
-	public Wydarzenia(String nazwa, String miejsce, String data, String godzina, Color color) {
+	public Wydarzenia(String nazwa, String miejsce, String data, String godzina, String color) {
 		this.nazwa = nazwa;
 		this.miejsce = miejsce;
 		this.data = data;
@@ -32,8 +31,7 @@ public class Wydarzenia implements Comparable<Wydarzenia> {
 		this.color = color;
 		kontakty = new ArrayList<Kontakt>();
 	}
-	
-	public Wydarzenia(String nazwa, String miejsce, String data, String godzina, Color color, int id) {
+	public Wydarzenia(String nazwa, String miejsce, String data, String godzina, String color, int id) {
 		this.nazwa = nazwa;
 		this.miejsce = miejsce;
 		this.data = data;
@@ -41,6 +39,15 @@ public class Wydarzenia implements Comparable<Wydarzenia> {
 		this.color = color;
 		this.id = id;
 		kontakty = new ArrayList<Kontakt>();
+	}
+	public Wydarzenia(String nazwa, String miejsce, String data, String godzina, String color, int id, ArrayList<Kontakt> kontakty) {
+		this.nazwa = nazwa;
+		this.miejsce = miejsce;
+		this.data = data;
+		this.godzina = godzina;
+		this.color = color;
+		this.id = id;
+		this.kontakty = kontakty;
 	}
 
 	// Settery
@@ -65,7 +72,7 @@ public class Wydarzenia implements Comparable<Wydarzenia> {
 		id = i;
 	}
 	
-	public void setColor(Color c)
+	public void setColor(String c)
 	{
 		color = c;
 	}
@@ -96,7 +103,7 @@ public class Wydarzenia implements Comparable<Wydarzenia> {
 		return id;
 	}
 	
-	public Color getColor() {
+	public String getColor() {
 		return color;
 	}
 	

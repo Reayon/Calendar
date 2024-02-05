@@ -18,6 +18,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.control.Button;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderStroke;
@@ -33,7 +34,12 @@ import warstwaLogiki.dataManager;
 public class kalendarzController {
     protected dataManager dm = new dataManager();
     private YearMonth currentYearMonth;
-
+    
+    @FXML
+    private DatePicker datePicker;
+    
+    @FXML
+    private Button aboutButton;
     
     @FXML
     private Label miesiac;
@@ -64,12 +70,18 @@ public class kalendarzController {
         createCalendarGrid();
         updateCalendar();
         centerGridPane();
+        datePicker.setValue(LocalDate.now());
+        datePicker.setOnAction(this::handleDatePickerAction);
         Platform.runLater(() -> {
             System.out.println();
         });
+        aboutButton.setOnAction(event -> showAboutDialog());
         
     }
-
+    private void handleDatePickerAction(ActionEvent event) {
+        currentYearMonth = YearMonth.from(datePicker.getValue());
+        updateCalendar();
+    }
     // Ustawienie obiektu DataManager, który zarządza danymi.
     public void setDataManager(dataManager dm) {
         this.dm = dm;
@@ -114,7 +126,7 @@ public class kalendarzController {
         if (!wydarzeniaDanegoDnia.isEmpty()) {
             dayInfoBuilder = new StringBuilder("Wydarzenia na " + selectedDate + ":\n");
             for (String event : wydarzeniaDanegoDnia) {
-                dayInfoBuilder.append("- ").append(event).append("\n");
+                dayInfoBuilder.append("").append(event).append("\n");
             }
         } else {
             dayInfoBuilder.append("Brak wydarzeń dla tego dnia.\n");
@@ -197,6 +209,18 @@ public class kalendarzController {
         currentYearMonth = currentYearMonth.plusMonths(1);
         updateCalendar();
     }
+    @FXML
+    protected void showAboutDialog() {
+        Alert alert = new Alert(AlertType.INFORMATION);
+        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(new Image("calendar-icon.png"));
+        alert.setTitle("O programie ''Kalendarz''");
+        alert.setHeaderText("Informacje ogólne: ");
+        alert.setContentText("Wersja: 1.0.0\n"
+        		+ "Autorzy: Filip Banasiak i Dawid Centkowski\n"
+        		+ "Grupa: 3\n");
+        alert.showAndWait();
+    }
 
     // Przełączenie na widok kontakty.
     public void switchToKontakty(ActionEvent event) throws IOException {
@@ -220,12 +244,5 @@ public class kalendarzController {
         scene = new Scene(root);
         stage.setScene(scene);
         stage.show();
-    }
-    
-    public static String toCssColor(Color color) {
-        return "rgba(" + Math.round(255 * color.getRed()) + ","
-                + Math.round(255 * color.getGreen()) + ","
-                + Math.round(255 * color.getBlue()) + ","
-                + color.getOpacity() + ")";
     }
 }

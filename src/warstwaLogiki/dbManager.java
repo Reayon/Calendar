@@ -105,17 +105,13 @@ public class dbManager {
 		bufor.zapisZapytan(sql);
 	}
 	
-	public void usunKontakt(Kontakt k) throws SQLException{
-		int id = k.getID();
-		
+	public void usunKontakt(int id) throws SQLException{
 		String sql = "DELETE FROM kontakt WHERE ID_kontaktu = '"+id+"';\n";
 		licznikZapytan++;
 		bufor.zapisZapytan(sql);
 	}
 	
-	public void usunAssignKontakt(Kontakt k) throws SQLException{
-		int id = k.getID();
-		
+	public void usunAssignKontakt(int id) throws SQLException{
 		String sql = "DELETE FROM assign WHERE ID_kontaktu = '"+id+"';\n";
 		licznikZapytan++;
 		bufor.zapisZapytan(sql);
@@ -135,7 +131,7 @@ public class dbManager {
 				String godzina = result.getString("godzina");
 				String c = result.getString("kolor");
 				int id = result.getInt("ID_wydarzenia");
-				Wydarzenia wo = new Wydarzenia(nazwa, miejsce, data, godzina, Color.valueOf(c));
+				Wydarzenia wo = new Wydarzenia(nazwa, miejsce, data, godzina, c);
 				wo.setID(id);
 				w.add(wo);
 			}
@@ -155,7 +151,7 @@ public class dbManager {
 			w.setID(id);
 		}
 		
-		String sql = "INSERT INTO wydarzenia (ID_wydarzenia, nazwa, miejsce, data, godzina) VALUES ('"+id+"', '"+w.getNazwa()+"', '"+w.getMiejsce()+"', '"+w.getData()+"', '"+w.getGodzina()+"', '"+w.getColor()+"');\n";
+		String sql = "INSERT INTO wydarzenia (ID_wydarzenia, nazwa, miejsce, data, godzina, kolor) VALUES ('"+id+"', '"+w.getNazwa()+"', '"+w.getMiejsce()+"', '"+w.getData()+"', '"+w.getGodzina()+"', '"+w.getColor()+"');\n";
 		licznikZapytan++;
 		bufor.zapisZapytan(sql);
 	}
