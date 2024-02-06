@@ -19,13 +19,14 @@
          <children>
             <TableView fx:id="tabelaWydarzen" prefHeight="348.0" prefWidth="481.0">
                <columns>
-                  <TableColumn fx:id="nazwaColumn" editable="false" prefWidth="159.0" resizable="false" text="Nazwa" />
-                  <TableColumn fx:id="miejsceColumn" editable="false" prefWidth="108.0" resizable="false" text="Miejsce" />
-                  <TableColumn fx:id="dataColumn" editable="false" prefWidth="70.0" resizable="false" text="Data" />
-                  <TableColumn fx:id="godzinaColumn" editable="false" prefWidth="57.0" resizable="false" text="Godzina" />
-                  <TableColumn fx:id="kontaktColumn" editable="false" prefWidth="116.0" resizable="false" text="Kontakty" />
-                  <TableColumn fx:id="colorColumn" prefWidth="56.0" text="Kolor" />
-                  <TableColumn fx:id="idColumn" prefWidth="75.0" text="id" />
+                  <TableColumn fx:id="nazwaColumn" editable="false" prefWidth="136.0" resizable="false" text="Nazwa" />
+                  <TableColumn fx:id="miejsceColumn" editable="false" prefWidth="96.0" resizable="false" text="Miejsce" />
+                  <TableColumn fx:id="dataColumn" editable="false" prefWidth="66.0" resizable="false" text="Data" />
+                  <TableColumn fx:id="godzinaColumn" editable="false" prefWidth="53.0" resizable="false" text="Godzina" />
+                  <TableColumn fx:id="kontaktColumn" editable="false" prefWidth="106.0" resizable="false" text="Kontakty" />
+                  <TableColumn fx:id="colorColumn" prefWidth="48.0" text="Kolor" />
+                  <TableColumn fx:id="kategoriaColumn" prefWidth="62.0" text="Kategoria" />
+                  <TableColumn fx:id="idColumn" prefWidth="149.0" text="id" />
                </columns>
             </TableView>
          </children>
@@ -65,5 +66,6 @@
          </font>
       </Text>
       <Button layoutX="452.0" layoutY="37.0" mnemonicParsing="false" onAction="#switchToKalendarz" text="Powrót do kalendarza" />
+      <Button layoutX="377.0" layoutY="37.0" mnemonicParsing="false" onAction="#switchToKategorie" text="Kategorie" />
    </children>
 </AnchorPane>

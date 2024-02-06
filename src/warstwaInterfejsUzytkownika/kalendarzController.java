@@ -61,7 +61,7 @@ public class kalendarzController {
     @FXML
     private kontaktyController kontaktyController;
     @FXML
-    private wydarzeniaController wydarzeniaController;
+	protected wydarzeniaController wydarzeniaController;
 
     // Metoda wywoływana podczas inicjalizacji kontrolera.
     @FXML
@@ -145,7 +145,7 @@ public class kalendarzController {
         alert.showAndWait();
     }
    
-    // Aktualizacja widoku kalendarza.
+ // Aktualizacja widoku kalendarza.
     private void updateCalendar() {
         if (currentYearMonth == null) {
             return;
@@ -169,16 +169,28 @@ public class kalendarzController {
                 } else {
                     dayLabel.setText(Integer.toString(dayCounter));
                     dayCounter++;
+                    //System.out.println(dayIndex);
                 }
                 
                 // Podświetlenie obecnego dnia niebieskim obramowaniem.
                 if (LocalDate.now().getMonth().equals(currentYearMonth.getMonth()) &&
                         LocalDate.now().getYear() == currentYearMonth.getYear() &&
                         dayLabel.getText().equals(Integer.toString(LocalDate.now().getDayOfMonth()))) {
-                    dayLabel.setStyle("-fx-border-color: blue; -fx-border-width: 2px;");
+                	//dayLabel.setStyle("-fx-border-color: blue; -fx-border-width: 2px;");
+                	dayLabel.setBorder(new Border(new BorderStroke(Color.BLUE, BorderStrokeStyle.SOLID, null, null)));
                 } else {
                     dayLabel.setStyle("");
+                    dayLabel.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, null, null)));
                 }
+                
+                Platform.runLater(()->{   
+                    for(int i=0; i<dm.pobierzListeWydarzen().size(); i++) {
+                    	if(dm.getDayOfMonthW(i) == dayIndex && dm.getMonthW(i) == currentYearMonth.getMonth().getValue() && dm.getYearW(i) == currentYearMonth.getYear()) {
+                    		
+                    		kalendarz.getChildren().get(dayIndex+2).setStyle("-fx-background-color: "+toCssColor(dm.pobierzListeWydarzen().get(i).getColor())+";");
+                    	}
+                    }
+                 });
             }
         }
     }
@@ -244,5 +256,11 @@ public class kalendarzController {
         scene = new Scene(root);
         stage.setScene(scene);
         stage.show();
+    }
+    public static String toCssColor(Color color) {
+        return "rgba(" + Math.round(255 * color.getRed()) + ","
+                + Math.round(255 * color.getGreen()) + ","
+                + Math.round(255 * color.getBlue()) + ","
+                + color.getOpacity() + ")";
     }
 }

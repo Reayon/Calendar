@@ -30,7 +30,7 @@ public class graphicUI extends Application {
 			Image icon = new Image("calendar-icon.png");
 			stage.setResizable(false);
 			stage.getIcons().add(icon);
-			stage.setTitle("Organizer by Filip Banasiak i Dawid Centkowski");
+			stage.setTitle("Kalendarz");
 			stage.setScene(scene);
 			stage.show();
 		} catch (IOException e) {

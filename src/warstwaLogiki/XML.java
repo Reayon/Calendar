@@ -15,6 +15,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import warstwaDanych.Kategorie;
 import warstwaDanych.Kontakt;
 import warstwaDanych.Wydarzenia;
 
@@ -205,6 +206,62 @@ public class XML {
 		            		k.setWydarzenie(w);
 		            	}
 		            }
+		        }
+		    }
+		    } catch(Exception e) {
+		    	System.err.println("Pusty plik. Podaj dane");
+		    }
+		    
+		    } catch (Exception e) {
+		    e.printStackTrace();
+		    }
+		}
+	public void zapisKategoriiDoXML(ArrayList<Kategorie> kategorie) {
+		try {
+			XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newInstance();
+			XMLStreamWriter writer = xmlOutputFactory.createXMLStreamWriter(new FileOutputStream("./src/Kategorie.xml"), "utf-8");
+			
+			writer.writeStartDocument("1.0");
+			
+			writer.writeStartElement("ZapisaneKategorie");
+			for (int i = 0; i < kategorie.size(); i++) {
+				Kategorie aktualnaKategoria = kategorie.get(i);
+				writer.writeStartElement("Kategoria");
+				writer.writeStartElement("Nazwa");
+				writer.writeCharacters(aktualnaKategoria.getNazwa());
+				writer.writeEndElement();
+				writer.writeStartElement("Wyd"+i);
+				writer.writeStartElement("IdWyd"+i);
+				writer.writeCharacters(aktualnaKategoria.getWydarzenie());
+				writer.writeEndElement();
+			}
+			writer.writeEndElement();
+			writer.flush();
+			writer.close();
+			System.out.println("Dane zapisane do pliku.");
+		}catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
+	public void odczytKategoriiXML(ArrayList<Kategorie> kategorie)
+	{
+		try {
+			InputStream in = new FileInputStream("./src/Wydarzenia.xml");
+		    DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+		    DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+		    try {
+		    Document doc = dBuilder.parse(in);
+		    doc.getDocumentElement().normalize();
+		    
+		    NodeList nList = doc.getElementsByTagName("Kategoria");
+
+		    for (int temp = 0; temp < nList.getLength(); temp++) {
+		        Node nNode = nList.item(temp);
+		        if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+		            Element eElement = (Element) nNode;
+		            String nazwaK = eElement.getElementsByTagName("Nazwa").item(0).getTextContent();
+		            Kategorie ka = new Kategorie(nazwaK);
+		            kategorie.add(ka);
 		        }
 		    }
 		    } catch(Exception e) {

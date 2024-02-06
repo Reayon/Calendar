@@ -11,8 +11,9 @@ public class Wydarzenia implements Comparable<Wydarzenia> {
 	private String miejsce;
 	private String data;
 	private String godzina;
-	private String color;
+	private Color color;
 	private ArrayList<Kontakt> kontakty;
+	private Kategorie kategoria;
 	private int id;
 	
 
@@ -23,7 +24,7 @@ public class Wydarzenia implements Comparable<Wydarzenia> {
 		this.godzina = godzina;
 		kontakty = new ArrayList<Kontakt>();
 	}
-	public Wydarzenia(String nazwa, String miejsce, String data, String godzina, String color) {
+	public Wydarzenia(String nazwa, String miejsce, String data, String godzina, Color color) {
 		this.nazwa = nazwa;
 		this.miejsce = miejsce;
 		this.data = data;
@@ -31,7 +32,7 @@ public class Wydarzenia implements Comparable<Wydarzenia> {
 		this.color = color;
 		kontakty = new ArrayList<Kontakt>();
 	}
-	public Wydarzenia(String nazwa, String miejsce, String data, String godzina, String color, int id) {
+	public Wydarzenia(String nazwa, String miejsce, String data, String godzina, Color color, int id) {
 		this.nazwa = nazwa;
 		this.miejsce = miejsce;
 		this.data = data;
@@ -40,7 +41,7 @@ public class Wydarzenia implements Comparable<Wydarzenia> {
 		this.id = id;
 		kontakty = new ArrayList<Kontakt>();
 	}
-	public Wydarzenia(String nazwa, String miejsce, String data, String godzina, String color, int id, ArrayList<Kontakt> kontakty) {
+	public Wydarzenia(String nazwa, String miejsce, String data, String godzina, Color color, int id, ArrayList<Kontakt> kontakty) {
 		this.nazwa = nazwa;
 		this.miejsce = miejsce;
 		this.data = data;
@@ -72,7 +73,7 @@ public class Wydarzenia implements Comparable<Wydarzenia> {
 		id = i;
 	}
 	
-	public void setColor(String c)
+	public void setColor(Color c)
 	{
 		color = c;
 	}
@@ -80,6 +81,10 @@ public class Wydarzenia implements Comparable<Wydarzenia> {
 	public void setKontakt(Kontakt k)
 	{
 		this.kontakty.add(k);
+	}
+	public void setKategoria(Kategorie k)
+	{
+		kategoria = k;
 	}
 
 	// Gettery
@@ -103,17 +108,30 @@ public class Wydarzenia implements Comparable<Wydarzenia> {
 		return id;
 	}
 	
-	public String getColor() {
+	public Color getColor() {
 		return color;
 	}
 	
 	public ArrayList<Kontakt> getArrayKontakt() {
 		return this.kontakty;
 	}
+	public Kategorie getKategoria() {
+		return this.kategoria;
+	}
+	public String getKategoriaNazwa() {
+		if(kategoria == null) {
+			return "brak kategorii";
+		}
+		return kategoria.getNazwa();
+	}
 	
 	public Kontakt getExactKontakt(int i)
 	{
 		return kontakty.get(i);
+	}
+	public void dropKategoria(Kategorie k)
+	{
+		kategoria = null;
 	}
 	
 	public void dropEqualKontakt(Kontakt k)
@@ -168,6 +186,11 @@ public class Wydarzenia implements Comparable<Wydarzenia> {
 		return nazwa + " " + miejsce + " " + data + " " + godzina + " " + id +" "+ getKontakty();
 	}
 	
+	public String toStringNazwa() {
+
+		return nazwa + " " + miejsce + " " + data + " " + godzina;
+	}
+	
 	public String toStringCUI() {
 
 		return nazwa + " " + miejsce + " " + data + " " + godzina + " " + id +" "+ getKontakty();
@@ -202,4 +225,11 @@ public class Wydarzenia implements Comparable<Wydarzenia> {
 			}
 		} return false;
 	} 
+	public boolean equalsKategorie(Object o) {
+		Kategorie k = (Kategorie) o;
+		if(this.kategoria.equals(k)) {
+				return true;
+		}
+		 return false;
+	}
 }

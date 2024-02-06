@@ -47,6 +47,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import warstwaDanych.Kategorie;
 import warstwaDanych.Kontakt;
 import warstwaDanych.Wydarzenia;
 
@@ -77,6 +78,8 @@ public class wydarzeniaController extends kalendarzController {
     
     @FXML
     private TableColumn<Wydarzenia, String> colorColumn;
+    @FXML
+    private TableColumn<Wydarzenia, Kategorie> kategoriaColumn;
 
     @FXML
     private MenuItem usunW;
@@ -87,7 +90,7 @@ public class wydarzeniaController extends kalendarzController {
     @FXML
     protected MenuItem aboutProgram;
 
-    
+    private kategorieController kategorieController;
     
     public void initialize() {
     	// Wyłączenie opcji edycji i usunięcia na starcie
@@ -122,6 +125,7 @@ public class wydarzeniaController extends kalendarzController {
     	colorColumn.setCellValueFactory(new PropertyValueFactory<>("color"));
     	idColumn.setCellValueFactory(new PropertyValueFactory<>("ID"));
         idColumn.setVisible(false);
+        kategoriaColumn.setCellValueFactory(new PropertyValueFactory<>("kategoriaNazwa"));
         
         // Wypełnienie tabeli danymi z bazy danych
         Platform.runLater(()->{
@@ -133,10 +137,12 @@ public class wydarzeniaController extends kalendarzController {
             			dm.pobierzListeWydarzen().get(i).getGodzina(),
             			dm.pobierzListeWydarzen().get(i).getColor(),
             			dm.pobierzListeWydarzen().get(i).getID());
-            	System.out.println("Wybrane Kolor: " + dm.pobierzListeWydarzen().get(i).getColor());
             	for(int j=0; j<dm.pobierzListeWydarzen().get(i).getKontaktySize(); j++) {
             		wydarzenie.setKontakt(dm.pobierzListeWydarzen().get(i).getExactKontakt(j));
             	}
+            	if(dm.pobierzListeWydarzen().get(i).getKategoria()!= null) {
+        			wydarzenie.setKategoria(dm.pobierzListeWydarzen().get(i).getKategoria());
+        		}
             	listaWydarzen.add(wydarzenie);
             }
             tabelaWydarzen.setItems(listaWydarzen);
@@ -211,17 +217,13 @@ public class wydarzeniaController extends kalendarzController {
              // w przeciwnym razie ustaw formattedDate na pusty ciąg znaków.
                 String formattedDate = selectedDate != null ? selectedDate.format(formatter) : "";
                 Color selectedColor = colorPick.getValue();
-                String hexColor = String.format("#%02X%02X%02X",
-                        (int) (selectedColor.getRed() * 255),
-                        (int) (selectedColor.getGreen() * 255),
-                        (int) (selectedColor.getBlue() * 255));
 
                 return new Wydarzenia(
                         nazwaTextField.getText(),
                         miejsceTextField.getText(),
                         formattedDate,
                         godzinaTextField.getText(),
-                        hexColor
+                        selectedColor
                 );
             }
             return null;
@@ -273,7 +275,7 @@ public class wydarzeniaController extends kalendarzController {
             godzinaTextField.setPromptText("Godzina");
             
             ColorPicker colorPick = new ColorPicker();
-            colorPick.setValue(Color.web(selectedWydarzenie.getColor() != null ? selectedWydarzenie.getColor() : "#000000"));
+            colorPick.setValue(selectedWydarzenie.getColor());
 
             dialogPane.setContent(new ScrollPane(new VBox(8, nazwaTextField, miejsceTextField, datePicker, godzinaTextField, colorPick)));
 
@@ -317,16 +319,12 @@ public class wydarzeniaController extends kalendarzController {
                 	 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
                      String formattedDate = selectedDate != null ? selectedDate.format(formatter) : "";
                      Color selectedColor = colorPick.getValue();
-                     String hexColor = String.format("#%02X%02X%02X",
-                             (int) (selectedColor.getRed() * 255),
-                             (int) (selectedColor.getGreen() * 255),
-                             (int) (selectedColor.getBlue() * 255));
                     return new Wydarzenia(
                     		nazwaTextField.getText(),
                             miejsceTextField.getText(),
                             formattedDate,
                             godzinaTextField.getText(),
-                            hexColor,
+                            selectedColor,
                             selectedWydarzenie.getID()
                     ); 
                 }
@@ -420,7 +418,8 @@ public class wydarzeniaController extends kalendarzController {
                 String godzina = eventElement.getElementsByTagName("Godzina").item(0).getTextContent();
                 String kolor = eventElement.getElementsByTagName("Kolor").item(0).getTextContent();
                 
-                Wydarzenia wydarzenie = new Wydarzenia(nazwa, miejsce, data, godzina, kolor);
+                
+                Wydarzenia wydarzenie = new Wydarzenia(nazwa, miejsce, data, godzina, Color.valueOf(kolor));
 
                 // Pobieranie informacji o kontaktach
                 NodeList contactNodes = eventElement.getElementsByTagName("Kontakt"+i);
@@ -446,7 +445,7 @@ public class wydarzeniaController extends kalendarzController {
                 // Dodanie wydarzenia do listy i bazy danych, jeśli nie istnieje
                 if (!eventExists) {
                     listaWydarzen.add(wydarzenie);
-                    dm.addWydarzenieZKoloremZKontaktem(nazwa, miejsce, data, godzina, kolor, kontakty, wydarzenie.getID());
+                    dm.addWydarzenieZKoloremZKontaktem(nazwa, miejsce, data, godzina, Color.valueOf(kolor), kontakty, wydarzenie.getID());
                     for(int k = 0;k<kontakty.size();k++)
                     {
                     	System.out.println(kontakty.get(k));
@@ -466,5 +465,15 @@ public class wydarzeniaController extends kalendarzController {
     	scene = new Scene(root);
     	stage.setScene(scene);
     	stage.show();
+    }
+    public void switchToKategorie(ActionEvent event) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("kategorie.fxml"));
+        Parent root = loader.load();
+        kategorieController = loader.getController();
+        kategorieController.setDataManager(dm);
+        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
     }
 }
