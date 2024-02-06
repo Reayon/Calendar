@@ -16,7 +16,7 @@
    <children>
       <VBox layoutX="17.0" layoutY="73.0" prefHeight="314.0" prefWidth="567.0">
          <children>
-            <TableView fx:id="tabelaWydarzen" prefHeight="348.0" prefWidth="481.0">
+            <TableView fx:id="tabelaWydarzen" prefHeight="348.0" prefWidth="634.0">
                <columns>
                   <TableColumn fx:id="nazwaColumn" editable="false" prefWidth="134.0" resizable="false" text="Nazwa" />
                   <TableColumn fx:id="miejsceColumn" editable="false" prefWidth="92.0" resizable="false" text="Miejsce" />
@@ -24,6 +24,7 @@
                   <TableColumn fx:id="godzinaColumn" editable="false" prefWidth="66.0" resizable="false" text="Godzina" />
                   <TableColumn fx:id="kontaktColumn" editable="false" prefWidth="129.0" resizable="false" text="Kontakty" />
                   <TableColumn fx:id="colorColumn" editable="false" prefWidth="61.0" resizable="false" text="Kolor" />
+                  <TableColumn fx:id="kategoriaColumn" editable="false" prefWidth="61.0" resizable="false" text="Kategoria" />
                </columns>
             </TableView>
          </children>
@@ -61,5 +62,6 @@
          </font>
       </Text>
       <Button layoutX="452.0" layoutY="37.0" mnemonicParsing="false" onAction="#switchToKalendarz" text="Powrót do kalendarza" />
+      <Button layoutX="374.0" layoutY="36.0" mnemonicParsing="false" onAction="#switchToKategorie" text="Kategorie" />
    </children>
 </AnchorPane>

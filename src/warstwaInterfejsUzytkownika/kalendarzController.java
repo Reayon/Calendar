@@ -52,10 +52,12 @@ public class kalendarzController {
 
     protected Stage stage;
     protected Scene scene;
+    
     @FXML
     private kontaktyController kontaktyController;
+    
     @FXML
-    private wydarzeniaController wydarzeniaController;
+	protected wydarzeniaController wydarzeniaController;
 
     // Metoda wywoływana podczas inicjalizacji kontrolera.
     @FXML
@@ -85,8 +87,12 @@ public class kalendarzController {
             for (int col = 0; col < 7; col++) {
                 Label dayLabel = new Label();
                 kalendarz.add(dayLabel, col, row);
+                //kalendarz.getChildren().get().setStyle("-fx-background-color: purple;");;
+                //kalendarz.getChildren.add(pane,0,1);
+                //kalendarz.getStylesheets().add(getClass().getResource("wydarzenia.css").toExternalForm());
                 dayLabel.setAlignment(Pos.CENTER);
                 dayLabel.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, null, null)));
+                
 
                 // Dodanie obsługi zdarzenia kliknięcia na etykietę.
                 dayLabel.setOnMouseClicked(event -> handleDayLabelClick(dayLabel.getText()));
@@ -110,7 +116,6 @@ public class kalendarzController {
 
         ArrayList<String> wydarzeniaDanegoDnia = dm.getWydarzeniaDanegoDnia(selectedDate);
         StringBuilder dayInfoBuilder = new StringBuilder();
-
         if (!wydarzeniaDanegoDnia.isEmpty()) {
             dayInfoBuilder = new StringBuilder("Wydarzenia na " + selectedDate + ":\n");
             for (String event : wydarzeniaDanegoDnia) {
@@ -157,16 +162,28 @@ public class kalendarzController {
                 } else {
                     dayLabel.setText(Integer.toString(dayCounter));
                     dayCounter++;
+                    //System.out.println(dayIndex);
                 }
                 
                 // Podświetlenie obecnego dnia niebieskim obramowaniem.
                 if (LocalDate.now().getMonth().equals(currentYearMonth.getMonth()) &&
                         LocalDate.now().getYear() == currentYearMonth.getYear() &&
                         dayLabel.getText().equals(Integer.toString(LocalDate.now().getDayOfMonth()))) {
-                    dayLabel.setStyle("-fx-border-color: blue; -fx-border-width: 2px;");
+                	//dayLabel.setStyle("-fx-border-color: blue; -fx-border-width: 2px;");
+                	dayLabel.setBorder(new Border(new BorderStroke(Color.BLUE, BorderStrokeStyle.SOLID, null, null)));
                 } else {
                     dayLabel.setStyle("");
+                    dayLabel.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, null, null)));
                 }
+                
+                Platform.runLater(()->{   
+                    for(int i=0; i<dm.pobierzListeWydarzen().size(); i++) {
+                    	if(dm.getDayOfMonthW(i) == dayIndex && dm.getMonthW(i) == currentYearMonth.getMonth().getValue() && dm.getYearW(i) == currentYearMonth.getYear()) {
+                    		
+                    		kalendarz.getChildren().get(dayIndex+2).setStyle("-fx-background-color: "+toCssColor(dm.pobierzListeWydarzen().get(i).getColor())+";");
+                    	}
+                    }
+                 });
             }
         }
     }

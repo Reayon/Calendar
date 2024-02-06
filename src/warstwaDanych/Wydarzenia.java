@@ -13,6 +13,7 @@ public class Wydarzenia implements Comparable<Wydarzenia> {
 	private String godzina;
 	private Color color;
 	private ArrayList<Kontakt> kontakty;
+	private Kategorie kategoria;
 	private int id;
 	
 
@@ -74,6 +75,11 @@ public class Wydarzenia implements Comparable<Wydarzenia> {
 	{
 		this.kontakty.add(k);
 	}
+	
+	public void setKategoria(Kategorie k)
+	{
+		kategoria = k;
+	}
 
 	// Gettery
 	public String getNazwa() {
@@ -104,9 +110,25 @@ public class Wydarzenia implements Comparable<Wydarzenia> {
 		return this.kontakty;
 	}
 	
+	public Kategorie getKategoria() {
+		return this.kategoria;
+	}
+	
+	public String getKategoriaNazwa() {
+		if(kategoria == null) {
+			return "brak kategorii";
+		}
+		return kategoria.getNazwa();
+	}
+	
 	public Kontakt getExactKontakt(int i)
 	{
 		return kontakty.get(i);
+	}
+	
+	public void dropKategoria(Kategorie k)
+	{
+		kategoria = null;
 	}
 	
 	public void dropEqualKontakt(Kontakt k)
@@ -161,6 +183,11 @@ public class Wydarzenia implements Comparable<Wydarzenia> {
 		return nazwa + " " + miejsce + " " + data + " " + godzina + " " + id +" "+ getKontakty();
 	}
 	
+	public String toStringNazwa() {
+
+		return nazwa + " " + miejsce + " " + data + " " + godzina;
+	}
+	
 	public String toStringCUI() {
 
 		return nazwa + " " + miejsce + " " + data + " " + godzina + " " + id +" "+ getKontakty();
@@ -194,5 +221,13 @@ public class Wydarzenia implements Comparable<Wydarzenia> {
 				return true;
 			}
 		} return false;
+	} 
+	
+	public boolean equalsKategorie(Object o) {
+		Kategorie k = (Kategorie) o;
+		if(this.kategoria.equals(k)) {
+				return true;
+		}
+		 return false;
 	} 
 }

@@ -35,6 +35,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import warstwaDanych.Kategorie;
 import warstwaDanych.Kontakt;
 import warstwaDanych.Wydarzenia;
 import warstwaLogiki.dataManager;
@@ -63,10 +64,16 @@ public class wydarzeniaController extends kalendarzController {
     private TableColumn<Wydarzenia, Color> colorColumn;
     
     @FXML
+    private TableColumn<Wydarzenia, Kategorie> kategoriaColumn;
+    
+    @FXML
     private MenuItem usunW;
     
     @FXML
     private MenuItem editW;
+    
+    @FXML
+    private kategorieController kategorieController;
 
     public void initialize() {
     	editW.setDisable(true);
@@ -93,6 +100,7 @@ public class wydarzeniaController extends kalendarzController {
     	godzinaColumn.setCellValueFactory(new PropertyValueFactory<>("godzina"));
     	kontaktColumn.setCellValueFactory(new PropertyValueFactory<>("kontaktyImieNazwisko"));
     	colorColumn.setCellValueFactory(new PropertyValueFactory<>("color"));
+    	kategoriaColumn.setCellValueFactory(new PropertyValueFactory<>("kategoriaNazwa"));
         
         Platform.runLater(()->{
         	
@@ -102,7 +110,12 @@ public class wydarzeniaController extends kalendarzController {
         			dm.pobierzListeWydarzen().get(i).getMiejsce(),
         			dm.pobierzListeWydarzen().get(i).getData(),
         			dm.pobierzListeWydarzen().get(i).getGodzina(),
-        			dm.pobierzListeWydarzen().get(i).getColor());
+        			dm.pobierzListeWydarzen().get(i).getColor(),
+        			dm.pobierzListeWydarzen().get(i).getID());
+        		if(dm.pobierzListeWydarzen().get(i).getKategoria()!= null) {
+        			wydarzenie.setKategoria(dm.pobierzListeWydarzen().get(i).getKategoria());
+        		}
+        			
         	for(int j=0; j<dm.pobierzListeWydarzen().get(i).getKontaktySize(); j++) {
         		wydarzenie.setKontakt(dm.pobierzListeWydarzen().get(i).getExactKontakt(j));
         	}
@@ -192,6 +205,7 @@ public class wydarzeniaController extends kalendarzController {
     private void onEditWydarzenieButtonClicked() {
         
     	Wydarzenia selectedWydarzenie = tabelaWydarzen.getSelectionModel().getSelectedItem();
+    	System.out.println(selectedWydarzenie.getID());
         if (selectedWydarzenie != null) {
             Dialog<Wydarzenia> dialog = new Dialog<>();
             dialog.setTitle("Edytuj wydarzenie");
@@ -254,13 +268,12 @@ public class wydarzeniaController extends kalendarzController {
                 }
                 return null;
             });
-
             Optional<Wydarzenia> result = dialog.showAndWait();
             result.ifPresent(editedWydarzenie -> {
                 listaWydarzen.remove(selectedWydarzenie);
                 listaWydarzen.add(editedWydarzenie);
                 try {
-                    dm.editWydarzenieZKolorem(editedWydarzenie.getNazwa(), editedWydarzenie.getMiejsce(), editedWydarzenie.getData(), editedWydarzenie.getGodzina(), editedWydarzenie.getColor(), editedWydarzenie.getID(), tabelaWydarzen.getSelectionModel().getSelectedIndex() + 2);
+                    dm.editWydarzenieZKolorem(editedWydarzenie.getNazwa(), editedWydarzenie.getMiejsce(), editedWydarzenie.getData(), editedWydarzenie.getGodzina(), editedWydarzenie.getColor(), editedWydarzenie.getID()+1);
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
@@ -307,5 +320,16 @@ public class wydarzeniaController extends kalendarzController {
     	scene = new Scene(root);
     	stage.setScene(scene);
     	stage.show();
+    }
+    
+    public void switchToKategorie(ActionEvent event) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("kategorie.fxml"));
+        Parent root = loader.load();
+        kategorieController = loader.getController();
+        kategorieController.setDataManager(dm);
+        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
     }
 }

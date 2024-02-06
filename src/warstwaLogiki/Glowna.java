@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import javafx.application.Application;
+import warstwaDanych.Kategorie;
 import warstwaDanych.Kontakt;
 import warstwaDanych.Wydarzenia;
 import warstwaInterfejsUzytkownika.consoleUI;
@@ -20,10 +21,11 @@ public class Glowna {
 		launch(args);
 		ArrayList<Kontakt> kontakty = new ArrayList<Kontakt>();
 		ArrayList<Wydarzenia> wydarzenia = new ArrayList<Wydarzenia>();
+		ArrayList<Kategorie> kategorie = new ArrayList<Kategorie>();
 		
 		//XML xml = new XML();
 		
-		dataManager dm = new dataManager(kontakty, wydarzenia);
+		dataManager dm = new dataManager(kontakty, wydarzenia, kategorie);
 		
 		dm.odczytajDane();
 		
