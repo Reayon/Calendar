@@ -118,7 +118,10 @@ public class kalendarzController {
     // Pobranie informacji o wybranym dniu.
     private String getDayInformation(String dayText) {
         int selectedDay = Integer.parseInt(dayText);
+        
+        System.out.println(selectedDay);
         LocalDate selectedDate = LocalDate.of(currentYearMonth.getYear(), currentYearMonth.getMonth(), selectedDay);
+        
 
         ArrayList<String> wydarzeniaDanegoDnia = dm.getWydarzeniaDanegoDnia(selectedDate);
         StringBuilder dayInfoBuilder = new StringBuilder();
@@ -156,22 +159,24 @@ public class kalendarzController {
         miesiac.setText(currentYearMonth.getMonth().toString());
         rok.setText(String.valueOf(currentYearMonth.getYear()));
         int dayCounter = 1;
-        
+        int blankDays = 0;
         // Pętle zagnieżdżone aktualizujące etykiety w kalendarzu.
         for (int row = 0; row < 6; row++) {
             for (int col = 0; col < 7; col++) {
                 Label dayLabel = (Label) kalendarz.getChildren().get(7 * row + col);
                 int dayIndex = 7 * row + col - (dayOfWeek - 1);
-                
+
                 // Sprawdzenie, czy komórka powinna być pusta (przed pierwszym dniem lub po ostatnim dniu).
                 if (dayIndex < 0 || dayIndex >= daysInMonth) {
                     dayLabel.setText("");
+                    if(dayCounter <= 1) {
+                    	blankDays++;
+                    }
                 } else {
                     dayLabel.setText(Integer.toString(dayCounter));
                     dayCounter++;
-                    //System.out.println(dayIndex);
                 }
-                
+                final int blank = blankDays;
                 // Podświetlenie obecnego dnia niebieskim obramowaniem.
                 if (LocalDate.now().getMonth().equals(currentYearMonth.getMonth()) &&
                         LocalDate.now().getYear() == currentYearMonth.getYear() &&
@@ -187,7 +192,7 @@ public class kalendarzController {
                     for(int i=0; i<dm.pobierzListeWydarzen().size(); i++) {
                     	if(dm.getDayOfMonthW(i) == dayIndex && dm.getMonthW(i) == currentYearMonth.getMonth().getValue() && dm.getYearW(i) == currentYearMonth.getYear()) {
                     		
-                    		kalendarz.getChildren().get(dayIndex+2).setStyle("-fx-background-color: "+toCssColor(dm.pobierzListeWydarzen().get(i).getColor())+";");
+                    		kalendarz.getChildren().get(dayIndex+blank-1).setStyle("-fx-background-color: "+toCssColor(dm.pobierzListeWydarzen().get(i).getColor())+";");
                     	}
                     }
                  });

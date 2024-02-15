@@ -19,6 +19,8 @@ import org.xml.sax.SAXException;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -39,6 +41,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -70,6 +73,13 @@ public class kontaktyController extends kalendarzController {
 
     @FXML
     private MenuItem Usun;
+    
+    @FXML
+    private TextField szukaj;
+    
+    @FXML
+    private Button przyciskSzukaj;
+    
     @FXML
     protected MenuItem aboutProgram;
 	
@@ -84,6 +94,7 @@ public class kontaktyController extends kalendarzController {
         });
         tabelaKontaktow.setRowFactory(tv -> {
             TableRow<Kontakt> row = new TableRow<>();
+            
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && (!row.isEmpty())) {
                     editKontakt();
@@ -110,6 +121,7 @@ public class kontaktyController extends kalendarzController {
         			listaKontaktow.add(kontakt);
         }
         tabelaKontaktow.setItems(listaKontaktow);
+        filtrujKontakty();
         });
         tabelaKontaktow.setOnMouseClicked(event -> {
             if (event.getClickCount() == 1) {
@@ -119,6 +131,7 @@ public class kontaktyController extends kalendarzController {
                     System.out.println("Wybrane ID: " + kontaktID);
                 }
             }
+           
         });
     }
         @FXML
@@ -285,7 +298,9 @@ public class kontaktyController extends kalendarzController {
                     if (buttonType == ButtonType.OK) {
                         try {
                             dm.removeKontaktGUI(selectedKontakt.getID());
-                            tabelaKontaktow.getItems().remove(selectedIdx);
+                            listaKontaktow.remove(selectedKontakt);
+                            //tabelaKontaktow.getItems().remove(selectedIdx);
+                            tabelaKontaktow.refresh();
                         } catch (SQLException e) {
                             e.printStackTrace();
                         }
@@ -315,6 +330,44 @@ public class kontaktyController extends kalendarzController {
                 }
             }
         }
+        
+        @FXML
+        private void filtrujKontakty() {
+        	FilteredList<Kontakt> filteredData = new FilteredList<>(listaKontaktow);
+    		
+        	szukaj.textProperty().addListener((observable, oldValue, newValue) -> {
+    			filteredData.setPredicate(kontakt -> {
+    				// If filter text is empty, display all persons.
+    				if (newValue == null || newValue.isEmpty()) {
+    					return true;
+    				}
+    				
+    				// Compare first name and last name of every person with filter text.
+    				String lowerCaseFilter = newValue.toLowerCase();
+    				
+    				if (kontakt.getImie().toLowerCase().contains(lowerCaseFilter)) {
+    					return true; 
+    				} else if (kontakt.getNazwisko().toLowerCase().contains(lowerCaseFilter)) {
+    					return true; 
+    				} else if (Integer.toString(kontakt.getNr()).toLowerCase().contains(lowerCaseFilter)) {
+    					return true; // Filter matches last name.
+    				} else if (kontakt.getEmail().toLowerCase().contains(lowerCaseFilter)) {
+    					return true; // Filter matches last name. 
+    				}
+    				return false; // Does not match.
+    			});
+    		});
+            
+            SortedList<Kontakt> sortedData = new SortedList<>(filteredData);
+    		
+    		// 4. Bind the SortedList comparator to the TableView comparator.
+    		sortedData.comparatorProperty().bind(tabelaKontaktow.comparatorProperty());
+    		
+    		// 5. Add sorted (and filtered) data to the table.
+    		tabelaKontaktow.setItems(sortedData);
+            
+        }
+        
         private void wczytajKontakty(File file) throws ParserConfigurationException, SAXException, IOException, SQLException {
         	try (InputStream in = new FileInputStream(file)) {
         	    DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();

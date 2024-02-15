@@ -231,9 +231,9 @@ public class XML {
 				writer.writeCharacters(aktualnaKategoria.getNazwa());
 				writer.writeEndElement();
 				writer.writeStartElement("Wyd"+i);
-				writer.writeStartElement("IdWyd"+i);
-				writer.writeCharacters(aktualnaKategoria.getWydarzenie());
-				writer.writeEndElement();
+				//writer.writeStartElement("IdWyd"+i);
+				//writer.writeCharacters(aktualnaKategoria.getWydarzenie());
+				//writer.writeEndElement();
 			}
 			writer.writeEndElement();
 			writer.flush();

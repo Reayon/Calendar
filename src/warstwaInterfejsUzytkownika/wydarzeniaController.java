@@ -21,6 +21,7 @@ import org.xml.sax.SAXException;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -88,6 +89,9 @@ public class wydarzeniaController extends kalendarzController {
     private MenuItem editW;
     
     @FXML
+    private TextField szukaj;
+    
+    @FXML
     protected MenuItem aboutProgram;
 
     private kategorieController kategorieController;
@@ -137,6 +141,9 @@ public class wydarzeniaController extends kalendarzController {
             			dm.pobierzListeWydarzen().get(i).getGodzina(),
             			dm.pobierzListeWydarzen().get(i).getColor(),
             			dm.pobierzListeWydarzen().get(i).getID());
+            		Color color = dm.pobierzListeWydarzen().get(i).getColor();
+            		
+            		//tabelaWydarzen.get
             	for(int j=0; j<dm.pobierzListeWydarzen().get(i).getKontaktySize(); j++) {
             		wydarzenie.setKontakt(dm.pobierzListeWydarzen().get(i).getExactKontakt(j));
             	}
@@ -146,11 +153,12 @@ public class wydarzeniaController extends kalendarzController {
             	listaWydarzen.add(wydarzenie);
             }
             tabelaWydarzen.setItems(listaWydarzen);
+            filtrujWydarzenia();
             });
         	// Ustawienia dla tabeli
             tabelaWydarzen.setStyle("-fx-background-color: transparent;");
+            
     }
-    
     @FXML
     private void dodajWydarzenieGUI() {
     	// Utworzenie okna dialogowego
@@ -370,15 +378,45 @@ public class wydarzeniaController extends kalendarzController {
                     try {
                     	// Usunięcie wydarzenia z bazy danych
                         dm.removeWydarzenieGUI(selectedWydarzenie.getID());
-                        
-                        // Usunięcie wydarzenia z listy i odświeżenie tabeli
-                        tabelaWydarzen.getItems().remove(selectedIdx);
+                        listaWydarzen.remove(selectedWydarzenie);
+                        tabelaWydarzen.refresh();
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
                 }
             });
         }
+    }
+    
+    @FXML
+    private void filtrujWydarzenia() {
+    	FilteredList<Wydarzenia> filteredData = new FilteredList<>(listaWydarzen, p -> true);
+		
+		// 2. Set the filter Predicate whenever the filter changes.
+        szukaj.textProperty().addListener((observable, oldValue, newValue) -> {
+			filteredData.setPredicate(wydarzenie -> {
+				// If filter text is empty, display all persons.
+				if (newValue == null || newValue.isEmpty()) {
+					return true;
+				}
+				
+				// Compare first name and last name of every person with filter text.
+				String lowerCaseFilter = newValue.toLowerCase();
+				
+				if (wydarzenie.getNazwa().toLowerCase().contains(lowerCaseFilter)) {
+					return true; 
+				} else if (wydarzenie.getMiejsce().toLowerCase().contains(lowerCaseFilter)) {
+					return true; 
+				} else if (wydarzenie.getData().toLowerCase().contains(lowerCaseFilter)) {
+					return true; // Filter matches last name.
+				} else if (wydarzenie.getGodzina().toLowerCase().contains(lowerCaseFilter)) {
+					return true; // Filter matches last name. 
+				}
+				return false; // Does not match.
+			});
+		});
+        
+        tabelaWydarzen.setItems(filteredData);
     }
     
     @FXML
