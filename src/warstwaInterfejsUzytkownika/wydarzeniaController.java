@@ -2,16 +2,21 @@ package warstwaInterfejsUzytkownika;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamWriter;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -32,18 +37,26 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ColorPicker;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseButton;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
@@ -51,6 +64,7 @@ import javafx.stage.Stage;
 import warstwaDanych.Kategorie;
 import warstwaDanych.Kontakt;
 import warstwaDanych.Wydarzenia;
+import warstwaLogiki.WydarzenieMiejsceComparator;
 
 public class wydarzeniaController extends kalendarzController {
 	// Lista obiektów klasy Wydarzenia
@@ -92,7 +106,13 @@ public class wydarzeniaController extends kalendarzController {
     private TextField szukaj;
     
     @FXML
+    private MenuItem przypiszK;
+    
+    @FXML
     protected MenuItem aboutProgram;
+    
+    @FXML
+    private ComboBox<Kontakt> kontaktyComboBox;
 
     private kategorieController kategorieController;
     
@@ -100,6 +120,7 @@ public class wydarzeniaController extends kalendarzController {
     	// Wyłączenie opcji edycji i usunięcia na starcie
     	editW.setDisable(true);
     	usunW.setDisable(true);
+    	przypiszK.setDisable(true);
     	
     	aboutProgram.setOnAction(event -> showAboutDialog());
     	
@@ -107,16 +128,37 @@ public class wydarzeniaController extends kalendarzController {
     	tabelaWydarzen.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             editW.setDisable(newValue == null);
             usunW.setDisable(newValue == null);
+            przypiszK.setDisable(newValue == null);
         });
     	
-    	 // Nasłuchiwanie podwójnego kliknięcia na wiersz tabeli
+    	 // Nasłuchiwanie podwójnego kliknięcia LPM na wiersz tabeli
     	tabelaWydarzen.setRowFactory(tv -> {
             TableRow<Wydarzenia> row = new TableRow<>();
+
+            // Kontekstowe menu dla wiersza tabeli
+            ContextMenu contextMenu = new ContextMenu();
+
+            // Tworzenie pozycji w kontekstowym menu
+            MenuItem przypiszKontaktMenuItem = new MenuItem("Przypisz kontakt");
+            przypiszKontaktMenuItem.setOnAction(event -> przypiszKontaktGUI());
+            MenuItem edytujWydarzenieMenuItem = new MenuItem("Edytuj Wydarzenie");
+            edytujWydarzenieMenuItem.setOnAction(event -> edytujWydarzenieGUI());
+            //MenuItem usunKontaktZWydarzeniaMenuItem = new MenuItem("Usun przypisane kontakty");
+            //usunKontaktZWydarzeniaMenuItem.setOnAction(event -> usunKontaktZWydarzeniaGUI());
+
+            // Dodawanie pozycji do kontekstowego menu
+            contextMenu.getItems().add(przypiszKontaktMenuItem);
+            contextMenu.getItems().add(edytujWydarzenieMenuItem);
+            //contextMenu.getItems().add(usunKontaktZWydarzeniaMenuItem);
+
+            // Obsługa zdarzenia dla kliknięcia prawym przyciskiem myszy
             row.setOnMouseClicked(event -> {
-                if (event.getClickCount() == 2 && (!row.isEmpty())) {
-                	edytujWydarzenieGUI();
+                if (event.getButton() == MouseButton.SECONDARY) {
+                    // Wyświetlenie kontekstowego menu w miejscu kliknięcia
+                    contextMenu.show(row, event.getScreenX(), event.getScreenY());
                 }
             });
+
             return row;
         });
     	
@@ -141,9 +183,6 @@ public class wydarzeniaController extends kalendarzController {
             			dm.pobierzListeWydarzen().get(i).getGodzina(),
             			dm.pobierzListeWydarzen().get(i).getColor(),
             			dm.pobierzListeWydarzen().get(i).getID());
-            		Color color = dm.pobierzListeWydarzen().get(i).getColor();
-            		
-            		//tabelaWydarzen.get
             	for(int j=0; j<dm.pobierzListeWydarzen().get(i).getKontaktySize(); j++) {
             		wydarzenie.setKontakt(dm.pobierzListeWydarzen().get(i).getExactKontakt(j));
             	}
@@ -157,8 +196,8 @@ public class wydarzeniaController extends kalendarzController {
             });
         	// Ustawienia dla tabeli
             tabelaWydarzen.setStyle("-fx-background-color: transparent;");
-            
     }
+    
     @FXML
     private void dodajWydarzenieGUI() {
     	// Utworzenie okna dialogowego
@@ -225,13 +264,14 @@ public class wydarzeniaController extends kalendarzController {
              // w przeciwnym razie ustaw formattedDate na pusty ciąg znaków.
                 String formattedDate = selectedDate != null ? selectedDate.format(formatter) : "";
                 Color selectedColor = colorPick.getValue();
-
+                int nextId = dm.getNastepneIdWydarzenia();
                 return new Wydarzenia(
                         nazwaTextField.getText(),
                         miejsceTextField.getText(),
                         formattedDate,
                         godzinaTextField.getText(),
-                        selectedColor
+                        selectedColor,
+                        nextId
                 );
             }
             return null;
@@ -242,13 +282,76 @@ public class wydarzeniaController extends kalendarzController {
             listaWydarzen.add(wydarzenie);
             try {
 				dm.addWydarzenieZKolorem(wydarzenie.getNazwa(), wydarzenie.getMiejsce(), wydarzenie.getData(), wydarzenie.getGodzina(), wydarzenie.getColor());
-			} catch (SQLException e) {
+            } catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
         });
     }
+   
+    @FXML
+    private void przypiszKontaktGUI() {
+    	Wydarzenia selectedWydarzenie = tabelaWydarzen.getSelectionModel().getSelectedItem();
+        if (selectedWydarzenie != null) {
+            Dialog<Wydarzenia> dialog = new Dialog<>();
+            dialog.setTitle("Przypisz kontakt do wydarzenia");
+            dialog.setHeaderText("Wybierz kontakt, który chcesz przypisać do wydarzenia:");
+
+            Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
+            stage.getIcons().add(new Image("calendar-icon.png"));
+
+            DialogPane dialogPane = dialog.getDialogPane();
+            dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+            ComboBox<Kontakt> kontaktyComboBox = new ComboBox<>();
+            kontaktyComboBox.setPromptText("Wybierz kontakty");
+            kontaktyComboBox.getItems().addAll(dm.pobierzListeKontaktow());
+
+            kontaktyComboBox.setCellFactory(lv -> new ListCell<Kontakt>() {
+                @Override
+                protected void updateItem(Kontakt kontakt, boolean empty) {
+                    super.updateItem(kontakt, empty);
+                    setText(empty ? "" : kontakt.getImie() + " " + kontakt.getNazwisko());
+                }
+            });
+            kontaktyComboBox.setButtonCell(new ListCell<Kontakt>() {
+                @Override
+                protected void updateItem(Kontakt kontakt, boolean empty) {
+                    super.updateItem(kontakt, empty);
+                    setText(empty ? "" : kontakt.getImie() + " " + kontakt.getNazwisko());
+                }
+            });
+
+            dialogPane.setContent(new ScrollPane(new VBox(8, kontaktyComboBox)));
+
+            Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
+            okButton.setDisable(true);
+
+            // Nasłuchiwanie zmian w wybieraczu kontaktów
+            kontaktyComboBox.valueProperty().addListener((observable, oldValue, newValue) ->
+                    okButton.setDisable(newValue == null));
+            dialog.setResultConverter(dialogButton -> {
+            	
+                if (dialogButton == ButtonType.OK) {
+                	Kontakt selectedContact = kontaktyComboBox.getSelectionModel().getSelectedItem();
+                        
+                        // Odświeżenie widoku tabeli
+                        tabelaWydarzen.refresh();
+
+                        try {
+							dm.dodajKontaktDoWydarzeniaGUI(selectedContact, selectedWydarzenie);
+						} catch (SQLException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+                }
+            return null;
+            });
+            dialog.showAndWait();
+        }
+    }
     
+
     
     @FXML
     private void edytujWydarzenieGUI() {
@@ -378,8 +481,9 @@ public class wydarzeniaController extends kalendarzController {
                     try {
                     	// Usunięcie wydarzenia z bazy danych
                         dm.removeWydarzenieGUI(selectedWydarzenie.getID());
-                        listaWydarzen.remove(selectedWydarzenie);
-                        tabelaWydarzen.refresh();
+                        
+                        // Usunięcie wydarzenia z listy i odświeżenie tabeli
+                        tabelaWydarzen.getItems().remove(selectedIdx);
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
@@ -388,36 +492,7 @@ public class wydarzeniaController extends kalendarzController {
         }
     }
     
-    @FXML
-    private void filtrujWydarzenia() {
-    	FilteredList<Wydarzenia> filteredData = new FilteredList<>(listaWydarzen, p -> true);
-		
-		// 2. Set the filter Predicate whenever the filter changes.
-        szukaj.textProperty().addListener((observable, oldValue, newValue) -> {
-			filteredData.setPredicate(wydarzenie -> {
-				// If filter text is empty, display all persons.
-				if (newValue == null || newValue.isEmpty()) {
-					return true;
-				}
-				
-				// Compare first name and last name of every person with filter text.
-				String lowerCaseFilter = newValue.toLowerCase();
-				
-				if (wydarzenie.getNazwa().toLowerCase().contains(lowerCaseFilter)) {
-					return true; 
-				} else if (wydarzenie.getMiejsce().toLowerCase().contains(lowerCaseFilter)) {
-					return true; 
-				} else if (wydarzenie.getData().toLowerCase().contains(lowerCaseFilter)) {
-					return true; // Filter matches last name.
-				} else if (wydarzenie.getGodzina().toLowerCase().contains(lowerCaseFilter)) {
-					return true; // Filter matches last name. 
-				}
-				return false; // Does not match.
-			});
-		});
-        
-        tabelaWydarzen.setItems(filteredData);
-    }
+    //---------------------------------Wczytywanie i zapisywanie-------------------------------------
     
     @FXML
     private void wczytajPlik(ActionEvent event) {
@@ -464,14 +539,13 @@ public class wydarzeniaController extends kalendarzController {
                 ArrayList<Kontakt> kontakty = new ArrayList<Kontakt>();
                 for (int j = 0; j < contactNodes.getLength(); j++) {
                     Element contactElement = (Element) contactNodes.item(j);
-                    String id = eventElement.getElementsByTagName("ID"+j).item(0).getTextContent();
+                    String id = eventElement.getElementsByTagName("ID").item(0).getTextContent();
                     int ID = Integer.parseInt(id);
                     String imie = contactElement.getElementsByTagName("Imie").item(0).getTextContent();
-                    String nazwisko = contactElement.getElementsByTagName("Nazwisko").item(0).getTextContent();
-                    String nu = contactElement.getElementsByTagName("NumerTelefonu").item(0).getTextContent();
-                    int numer = Integer.parseInt(nu);
-                    String email = contactElement.getElementsByTagName("Email").item(0).getTextContent();
-
+            		String nazwisko = contactElement.getElementsByTagName("Nazwisko").item(0).getTextContent();
+            		String nu = contactElement.getElementsByTagName("NumerTelefonu").item(0).getTextContent();
+            		int numer = Integer.parseInt(nu);
+            		String email = contactElement.getElementsByTagName("Email").item(0).getTextContent();
                     Kontakt kontakt = new Kontakt(imie, nazwisko, numer, email, ID);
                     kontakty.add(kontakt);
                     wydarzenie.setKontakt(kontakt);
@@ -492,6 +566,111 @@ public class wydarzeniaController extends kalendarzController {
                 }
             }
         }
+    }
+    
+    @FXML
+    private void filtrujWydarzenia() {
+    	FilteredList<Wydarzenia> filteredData = new FilteredList<>(listaWydarzen, p -> true);
+		
+		// 2. Set the filter Predicate whenever the filter changes.
+        szukaj.textProperty().addListener((observable, oldValue, newValue) -> {
+			filteredData.setPredicate(wydarzenie -> {
+				// If filter text is empty, display all persons.
+				if (newValue == null || newValue.isEmpty()) {
+					return true;
+				}
+				
+				// Compare first name and last name of every person with filter text.
+				String lowerCaseFilter = newValue.toLowerCase();
+				
+				if (wydarzenie.getNazwa().toLowerCase().contains(lowerCaseFilter)) {
+					return true; 
+				} else if (wydarzenie.getMiejsce().toLowerCase().contains(lowerCaseFilter)) {
+					return true; 
+				} else if (wydarzenie.getData().toLowerCase().contains(lowerCaseFilter)) {
+					return true; // Filter matches last name.
+				} else if (wydarzenie.getGodzina().toLowerCase().contains(lowerCaseFilter)) {
+					return true; // Filter matches last name. 
+				}
+				return false; // Does not match.
+			});
+		});
+        
+        tabelaWydarzen.setItems(filteredData);
+    }
+    
+    @FXML
+    private void zapiszDoPlikuXML(ActionEvent event) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Pliki XML", "*.xml"));
+        File selectedFile = fileChooser.showSaveDialog(stage);
+
+        if (selectedFile != null) {
+            try {
+                zapiszWydarzenDoXML(selectedFile);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void zapiszWydarzenDoXML(File file) {
+    	try {
+			XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newInstance();
+			XMLStreamWriter writer = xmlOutputFactory.createXMLStreamWriter(new FileOutputStream(file), "utf-8");
+			
+			writer.writeStartDocument("1.0");
+			
+			writer.writeStartElement("ZapisaneWydarzenia");
+			for (int i = 0; i < listaWydarzen.size(); i++) {
+				Wydarzenia aktualneWydarzenie = listaWydarzen.get(i);
+				writer.writeStartElement("Wydarzenie");
+				writer.writeStartElement("Nazwa");
+				writer.writeCharacters(aktualneWydarzenie.getNazwa());
+				writer.writeEndElement();
+				writer.writeStartElement("Miejsce");
+				writer.writeCharacters(aktualneWydarzenie.getMiejsce());
+				writer.writeEndElement();
+				writer.writeStartElement("Data");
+				writer.writeCharacters(aktualneWydarzenie.getData());
+				writer.writeEndElement();
+				writer.writeStartElement("Godzina");
+				writer.writeCharacters(aktualneWydarzenie.getGodzina());
+				writer.writeEndElement();
+				writer.writeStartElement("Kolor");
+	            writer.writeCharacters(aktualneWydarzenie.getColor().toString());
+	            writer.writeEndElement();
+				writer.writeStartElement("ZapisaneKontakty");
+				for (int j = 0; j < listaWydarzen.get(i).getKontaktySize(); j++) {
+					Kontakt aktualnyKontakt = listaWydarzen.get(i).getExactKontakt(j);
+					writer.writeStartElement("Kontakt"+i);
+					writer.writeStartElement("ID");
+					writer.writeCharacters(Integer.toString(aktualnyKontakt.getID()));
+					writer.writeEndElement();
+					writer.writeStartElement("Imie");
+					writer.writeCharacters(aktualnyKontakt.getImie());
+					writer.writeEndElement();
+					writer.writeStartElement("Nazwisko");
+					writer.writeCharacters(aktualnyKontakt.getNazwisko());
+					writer.writeEndElement();
+					writer.writeStartElement("NumerTelefonu");
+					writer.writeCharacters(Integer.toString(aktualnyKontakt.getNr()));
+					writer.writeEndElement();
+					writer.writeStartElement("Email");
+					writer.writeCharacters(aktualnyKontakt.getEmail());
+					writer.writeEndElement();
+					writer.writeEndElement();
+				}
+				writer.writeEndElement();
+				writer.writeEndElement();
+			}
+			writer.writeEndElement();
+			writer.flush();
+			writer.close();
+			System.out.println("Dane zapisane do pliku.");
+		}catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
     }
     
     public void switchToKalendarz(ActionEvent event) throws IOException {

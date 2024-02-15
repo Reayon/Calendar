@@ -154,27 +154,6 @@ public class dataManager {
 		
 		System.out.println("Pomyślnie edytowano kontakt");
 	}
-	public void editKontaktGUI(String imie, String nazwisko, int numer, String email, int id) throws SQLException {
-	    // Znajdź kontakt o zadanym numerze
-	    Optional<Kontakt> optionalKontakt = kontakty.stream()
-	            .filter(k -> k.getID() == id-1)
-	            .findFirst();
-
-	    if (optionalKontakt.isPresent()) {
-	        Kontakt kontakt = optionalKontakt.get();
-	        kontakt.setImie(imie);
-	        kontakt.setNazwisko(nazwisko);
-	        kontakt.setNr(numer);
-	        kontakt.setEmail(email);
-
-	        db.edytujKontakt(kontakt);
-	        xml.zapisKontaktowDoXML(kontakty);
-
-	        System.out.println("Pomyślnie edytowano kontakt");
-	    } else {
-	        System.out.println("Nie można znaleźć kontaktu do edycji.");
-	    }
-	}
 	
 	public void removeKontakt(int nr) throws SQLException {
 		
@@ -192,30 +171,6 @@ public class dataManager {
 		
 		System.out.println("Pomyślnie usunięto kontakt");
 	}
-	public void removeKontaktGUI(int id) throws SQLException {
-	    // Find the contact by ID
-	    Optional<Kontakt> optionalKontakt = kontakty.stream()
-	            .filter(k -> k.getID() == id)
-	            .findFirst();
-
-	    if (optionalKontakt.isPresent()) {
-	        Kontakt kontakt = optionalKontakt.get();
-
-	        // Remove the contact from the database and related entities
-	        db.usunAssignKontakt(kontakt.getID());
-	        db.usunKontakt(kontakt.getID());
-
-	        // Remove the contact from the list
-	        kontakty.remove(kontakt);
-
-	        // Remove the contact from XML
-	        xml.zapisKontaktowDoXML(kontakty);
-
-	        System.out.println("Pomyślnie usunięto kontakt");
-	    } else {
-	        System.err.println("Nie znaleziono kontaktu o id: " + id);
-	    }
-	}
 	
 	
 	public void addWydarzenie(String nazwa, String miejsce, String data, String godzina) throws SQLException {
@@ -226,35 +181,6 @@ public class dataManager {
 			wydarzenia.add(wo);
 			xml.zapisWydarzeniaDoXML(wydarzenia);
 			
-		} else {
-			System.out.println("Takie wydarzenie już istnieje");
-		}
-	}
-	
-	public void addWydarzenieZKolorem(String nazwa, String miejsce, String data, String godzina, Color color) throws SQLException {
-		
-		if(equalsArrayListWydarzenia(new Wydarzenia(nazwa, miejsce, data, godzina, color))==false) {
-			Wydarzenia wo = new Wydarzenia(nazwa, miejsce, data, godzina, color);
-			db.dodajWydarzenie(wydarzenia, wo);
-			wydarzenia.add(wo);
-			xml.zapisWydarzeniaDoXML(wydarzenia);
-			
-		} else {
-			System.out.println("Takie wydarzenie już istnieje");
-		}
-	}
-	
-	public void addWydarzenieZKoloremZKontaktem(String nazwa, String miejsce, String data, String godzina, Color color, ArrayList<Kontakt> kontakty, int id) throws SQLException {
-		
-		if(equalsArrayListWydarzenia(new Wydarzenia(nazwa, miejsce, data, godzina, color, id, kontakty))==false) {
-			Wydarzenia wo = new Wydarzenia(nazwa, miejsce, data, godzina, color, id ,kontakty);
-			db.dodajWydarzenie(wydarzenia, wo);
-			wydarzenia.add(wo);
-			xml.zapisWydarzeniaDoXML(wydarzenia);
-			for(int k = 0;k<kontakty.size();k++)
-            {
-            	db.przypiszKontaktdoWydarzenia(kontakty.get(k).getID(), wo.getID());
-            }
 		} else {
 			System.out.println("Takie wydarzenie już istnieje");
 		}
@@ -273,29 +199,6 @@ public class dataManager {
 		System.out.println("Pomyślnie edytowano wydarzenie");
 	}
 	
-	public void editWydarzenieZKolorem(String nazwa, String miejsce, String data, String godzina, Color color, int id) throws SQLException {
-	    // Znajdź wydarzenie o zadanym ID
-	    Optional<Wydarzenia> optionalWydarzenie = wydarzenia.stream()
-	            .filter(w -> w.getID() == id)
-	            .findFirst();
-
-	    if (optionalWydarzenie.isPresent()) {
-	        Wydarzenia wydarzenie = optionalWydarzenie.get();
-	        wydarzenie.setNazwa(nazwa);
-	        wydarzenie.setMiejsce(miejsce);
-	        wydarzenie.setData(data);
-	        wydarzenie.setGodzina(godzina);
-	        wydarzenie.setColor(color);
-
-	        db.edytujWydarzenie(wydarzenie);
-	        xml.zapisWydarzeniaDoXML(wydarzenia);
-
-	        System.out.println("Pomyślnie edytowano wydarzenie");
-	    } else {
-	        System.out.println("Nie można znaleźć wydarzenia do edycji.");
-	    }
-	}
-	
 	public void removeWydarzenie(int nr) throws SQLException {
 		
 		db.usunAssignWydarzenie(wydarzenia.get(nr-1).getID());
@@ -309,117 +212,6 @@ public class dataManager {
         }
 		wydarzenia.remove(nr-1);
 		xml.zapisWydarzeniaDoXML(wydarzenia);
-		
-		System.out.println("Pomyślnie edytowano wydarzenie");
-	}
-	public void removeWydarzenieGUI(int id) throws SQLException {
-	    Optional<Wydarzenia> optionalWydarzenie = wydarzenia.stream()
-	            .filter(w -> w.getID() == id)
-	            .findFirst();
-
-	    if (optionalWydarzenie.isPresent()) {
-	        Wydarzenia wydarzenie = optionalWydarzenie.get();
-	        db.usunAssignWydarzenie(wydarzenie.getID());
-	        db.usunWydarzenie(wydarzenie.getID());
-	        for (int i = 0; i < kontakty.size(); i++) {
-	            for (int j = 0; j < wydarzenie.getKontaktySize(); j++) {
-	                if (kontakty.get(i).equals(wydarzenie.getExactKontakt(j))) {
-	                    kontakty.get(i).dropExactWydarzenie(wydarzenie);
-	                }
-	            }
-	        }
-	        wydarzenia.remove(wydarzenie);
-	        xml.zapisWydarzeniaDoXML(wydarzenia);
-
-	        System.out.println("Pomyślnie edytowano wydarzenie");
-	    } else {
-	        System.err.println("Nie znaleziono wydarzenia o id: " + id);
-	    }
-	}
-	
-	public int getDayOfMonthW(int i) {
-	    Wydarzenia wydarzenie = wydarzenia.get(i);
-	    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-	    LocalDate wydarzenieDate = LocalDate.parse(wydarzenie.getData(), formatter);
-        return wydarzenieDate.getDayOfMonth();
-	}
-	
-	public int getMonthW(int i) {
-	    Wydarzenia wydarzenie = wydarzenia.get(i);
-	    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-	    LocalDate wydarzenieDate = LocalDate.parse(wydarzenie.getData(), formatter);
-        return wydarzenieDate.getMonth().getValue();
-	}
-	
-	public int getYearW(int i) {
-	    Wydarzenia wydarzenie = wydarzenia.get(i);
-	    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-	    LocalDate wydarzenieDate = LocalDate.parse(wydarzenie.getData(), formatter);
-        return wydarzenieDate.getYear();
-	}
-	
-	public ArrayList<String> getWydarzeniaDanegoDnia(LocalDate date) {
-	    ArrayList<String> wydarzeniaDanegoDnia = new ArrayList<>();
-
-	    for (int i = 0; i < wydarzenia.size(); i++) {
-	        Wydarzenia wydarzenie = wydarzenia.get(i);
-	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-	        LocalDate wydarzenieDate = LocalDate.parse(wydarzenie.getData(), formatter);
-
-	        if (wydarzenieDate.equals(date)) {
-	            String eventInfo = String.format(
-	                "Nazwa: " + wydarzenie.getNazwa() + "\nMiejsce: " + wydarzenie.getMiejsce() + "\nData: " + wydarzenie.getData() + "\nGodzina: " + wydarzenie.getGodzina() + "\n"
-	            );
-
-	            wydarzeniaDanegoDnia.add(eventInfo);
-	        }
-	    }
-
-	    return wydarzeniaDanegoDnia;
-	}
-	
-	public Color getKolorWydarzenia(String nazwaWydarzenia) {
-	    for (int i = 0; i < wydarzenia.size(); i++) {
-	        Wydarzenia wydarzenie = wydarzenia.get(i);
-	        if (wydarzenie.getNazwa().equals(nazwaWydarzenia)) {
-	            return wydarzenie.getColor();
-	        }
-	    }
-	    return null;
-	}
-	
-	public void addKategoria(String nazwa) throws SQLException {
-		
-		if(equalsArrayListKategorie(new Kategorie(nazwa))==false) {
-			Kategorie ka = new Kategorie(nazwa);
-			db.dodajKategorie(kategorie, ka);
-			kategorie.add(ka);
-		} else {
-			System.out.println("Taka kategoria już istnieje");
-		}
-	}
-	
-	public void editKategoria(String nazwa, int nr) throws SQLException {
-		
-		kategorie.get(nr-1).setNazwa(nazwa);
-		
-		db.edytujKategorie(kategorie.get(nr-1));
-		
-		System.out.println("Pomyślnie edytowano wydarzenie");
-	}
-	
-	public void removeKategoria(int nr) throws SQLException {
-		
-		db.usunAssignKategorie(kategorie.get(nr-1).getID());
-		db.usunKategorie(kategorie.get(nr-1).getID());
-		for(int i=0;i<wydarzenia.size();i++) {
-            for(int j=0;j<kategorie.get(nr-1).getWydarzenia().size();j++) {
-                if(wydarzenia.get(i).equals(kategorie.get(nr-1).getExactWydarzenie(j))) {
-                    wydarzenia.get(i).dropKategoria(kategorie.get(nr-1));
-                }
-            }
-        }
-		kategorie.remove(nr-1);
 		
 		System.out.println("Pomyślnie edytowano wydarzenie");
 	}
@@ -481,5 +273,294 @@ public class dataManager {
 				break;
 		}
 	}
+	
+	//-----------------------------------------GUI-------------------------------------------------------
+	
+	public void addKontaktGUI(String imie, String nazwisko, int numer, String email) throws SQLException {
+	    int nextIdKontaktu = getNastepneIdKontaktu();
+
+	    if (equalsArrayListKontakty(new Kontakt(imie, nazwisko, numer, email)) == false) {
+	        Kontakt kon = new Kontakt(imie, nazwisko, numer, email, nextIdKontaktu);
+	        db.dodajKontaktgui(kontakty, kon);
+	        kontakty.add(kon);
+	        xml.zapisKontaktowDoXML(kontakty);
+	    } else {
+	        System.out.println("Taki kontakt już istnieje");
+	    }
+	}
+	public int getNastepneIdKontaktu() {
+        int maxId = 0;
+
+        for (int i = 0; i < kontakty.size(); i++) {
+        	Kontakt kontakt = kontakty.get(i);
+            if (kontakt.getID() > maxId) {
+                maxId = kontakt.getID();
+            }
+        }
+
+        return maxId + 1;
+	}
+	
+	public void editKontaktGUI(String imie, String nazwisko, int numer, String email, int id) throws SQLException {
+	    // Znajdź kontakt o zadanym numerze
+	    Optional<Kontakt> optionalKontakt = kontakty.stream()
+	            .filter(k -> k.getID() == id-1)
+	            .findFirst();
+
+	    if (optionalKontakt.isPresent()) {
+	        Kontakt kontakt = optionalKontakt.get();
+	        kontakt.setImie(imie);
+	        kontakt.setNazwisko(nazwisko);
+	        kontakt.setNr(numer);
+	        kontakt.setEmail(email);
+
+	        db.edytujKontakt(kontakt);
+	        xml.zapisKontaktowDoXML(kontakty);
+
+	        System.out.println("Pomyślnie edytowano kontakt");
+	    } else {
+	        System.out.println("Nie można znaleźć kontaktu do edycji.");
+	    }
+	}
+	
+	public void removeKontaktGUI(int id) throws SQLException {
+	    // Find the contact by ID
+	    Optional<Kontakt> optionalKontakt = kontakty.stream()
+	            .filter(k -> k.getID() == id)
+	            .findFirst();
+
+	    if (optionalKontakt.isPresent()) {
+	        Kontakt kontakt = optionalKontakt.get();
+
+	        // Remove the contact from the database and related entities
+	        db.usunAssignKontakt(kontakt.getID());
+	        db.usunKontakt(kontakt.getID());
+
+	        // Remove the contact from the list
+	        kontakty.remove(kontakt);
+
+	        // Remove the contact from XML
+	        xml.zapisKontaktowDoXML(kontakty);
+
+	        System.out.println("Pomyślnie usunięto kontakt");
+	    } else {
+	        System.err.println("Nie znaleziono kontaktu o id: " + id);
+	    }
+	}
+	
+	public void addWydarzenieZKolorem(String nazwa, String miejsce, String data, String godzina, Color color) throws SQLException {
+		int nextIdWydarzenia = getNastepneIdWydarzenia();
+		if(equalsArrayListWydarzenia(new Wydarzenia(nazwa, miejsce, data, godzina, color))==false) {
+			Wydarzenia wo = new Wydarzenia(nazwa, miejsce, data, godzina, color, nextIdWydarzenia);
+			db.dodajWydarzeniegui(wydarzenia, wo);
+			wydarzenia.add(wo);
+			xml.zapisWydarzeniaDoXML(wydarzenia);
+			
+		} else {
+			System.out.println("Takie wydarzenie już istnieje");
+		}
+	}
+	public int getNastepneIdWydarzenia() {
+        int maxId = 0;
+
+        for (int i = 0; i < wydarzenia.size(); i++) {
+        	Wydarzenia wydarzenie = wydarzenia.get(i);
+            if (wydarzenie.getID() > maxId) {
+                maxId = wydarzenie.getID();
+            }
+        }
+
+        return maxId + 1;
+	}
+	
+	//Do wczytania pliku XML w GUI
+	public void addWydarzenieZKoloremZKontaktem(String nazwa, String miejsce, String data, String godzina, Color color, ArrayList<Kontakt> kontakty, int id) throws SQLException {
+		
+		if(equalsArrayListWydarzenia(new Wydarzenia(nazwa, miejsce, data, godzina, color, id, kontakty))==false) {
+			Wydarzenia wo = new Wydarzenia(nazwa, miejsce, data, godzina, color, id ,kontakty);
+			db.dodajWydarzeniegui(wydarzenia, wo);
+			wydarzenia.add(wo);
+			xml.zapisWydarzeniaDoXML(wydarzenia);
+			for(int k = 0;k<kontakty.size();k++)
+            {
+            	db.przypiszKontaktdoWydarzenia(kontakty.get(k).getID(), wo.getID());
+            }
+		} else {
+			System.out.println("Takie wydarzenie już istnieje");
+		}
+	}
+	
+	public void dodajKontaktDoWydarzeniaGUI(Kontakt selectedContact, Wydarzenia selectedWydarzenie) throws SQLException {
+	    if (selectedContact.equalsWydarzenia(selectedWydarzenie)==false) {
+	        if (!selectedWydarzenie.equalsKontakty(selectedContact)) {
+	            selectedWydarzenie.setKontakt(selectedContact);
+	            db.przypiszKontaktdoWydarzenia(selectedContact.getID(), selectedWydarzenie.getID());
+	            xml.zapisWydarzeniaDoXML(wydarzenia);
+	        } else {
+	            System.out.println("Ten kontakt został już dodany do tego wydarzenia");
+	        }
+	    }
+	}
+	
+	public void usunKontaktZWydarzeniaGUI(int kontaktIndex, int wydarzenieIndex) throws SQLException {
+	    Kontakt kontakt = kontakty.get(kontaktIndex);
+	    Wydarzenia wydarzenie = wydarzenia.get(wydarzenieIndex);
+
+	    // Remove the assignment from the database
+	    db.usunKontaktZWydarzenia(kontakt.getID(), wydarzenie.getID());
+
+	    // Remove the contact from the event in the list
+	    wydarzenie.dropEqualKontakt(kontakt);
+
+	    // Update XML
+	    xml.zapisWydarzeniaDoXML(wydarzenia);
+	}
+	
+	public void editWydarzenieZKolorem(String nazwa, String miejsce, String data, String godzina, Color color, int id) throws SQLException {
+	    // Znajdź wydarzenie o zadanym ID
+	    Optional<Wydarzenia> optionalWydarzenie = wydarzenia.stream()
+	            .filter(w -> w.getID() == id)
+	            .findFirst();
+
+	    if (optionalWydarzenie.isPresent()) {
+	        Wydarzenia wydarzenie = optionalWydarzenie.get();
+	        wydarzenie.setNazwa(nazwa);
+	        wydarzenie.setMiejsce(miejsce);
+	        wydarzenie.setData(data);
+	        wydarzenie.setGodzina(godzina);
+	        wydarzenie.setColor(color);
+
+	        db.edytujWydarzenie(wydarzenie);
+	        xml.zapisWydarzeniaDoXML(wydarzenia);
+
+	        System.out.println("Pomyślnie edytowano wydarzenie");
+	    } else {
+	        System.out.println("Nie można znaleźć wydarzenia do edycji.");
+	    }
+	}
+	
+	public void removeWydarzenieGUI(int id) throws SQLException {
+	    Optional<Wydarzenia> optionalWydarzenie = wydarzenia.stream()
+	            .filter(w -> w.getID() == id)
+	            .findFirst();
+
+	    if (optionalWydarzenie.isPresent()) {
+	        Wydarzenia wydarzenie = optionalWydarzenie.get();
+	        db.usunAssignWydarzenie(wydarzenie.getID());
+	        db.usunWydarzenie(wydarzenie.getID());
+	        for (int i = 0; i < kontakty.size(); i++) {
+	            for (int j = 0; j < wydarzenie.getKontaktySize(); j++) {
+	                if (kontakty.get(i).equals(wydarzenie.getExactKontakt(j))) {
+	                    kontakty.get(i).dropExactWydarzenie(wydarzenie);
+	                }
+	            }
+	        }
+	        wydarzenia.remove(wydarzenie);
+	        xml.zapisWydarzeniaDoXML(wydarzenia);
+
+	        System.out.println("Pomyślnie edytowano wydarzenie");
+	    } else {
+	        System.err.println("Nie znaleziono wydarzenia o id: " + id);
+	    }
+	}
+	public int getDayOfMonthW(int i) {
+	    Wydarzenia wydarzenie = wydarzenia.get(i);
+	    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+	    LocalDate wydarzenieDate = LocalDate.parse(wydarzenie.getData(), formatter);
+        return wydarzenieDate.getDayOfMonth();
+	}
+	
+	public int getMonthW(int i) {
+	    Wydarzenia wydarzenie = wydarzenia.get(i);
+	    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+	    LocalDate wydarzenieDate = LocalDate.parse(wydarzenie.getData(), formatter);
+        return wydarzenieDate.getMonth().getValue();
+	}
+	
+	public int getYearW(int i) {
+	    Wydarzenia wydarzenie = wydarzenia.get(i);
+	    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+	    LocalDate wydarzenieDate = LocalDate.parse(wydarzenie.getData(), formatter);
+        return wydarzenieDate.getYear();
+	}
+	
+	public ArrayList<String> getWydarzeniaDanegoDnia(LocalDate date) {
+	    ArrayList<String> wydarzeniaDanegoDnia = new ArrayList<>();
+
+	    for (int i = 0; i < wydarzenia.size(); i++) {
+	        Wydarzenia wydarzenie = wydarzenia.get(i);
+	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+	        LocalDate wydarzenieDate = LocalDate.parse(wydarzenie.getData(), formatter);
+
+	        if (wydarzenieDate.equals(date)) {
+	            String eventInfo = String.format(
+	                "Nazwa: " + wydarzenie.getNazwa() + "\nMiejsce: " + wydarzenie.getMiejsce() + "\nData: " + wydarzenie.getData() + "\nGodzina: " + wydarzenie.getGodzina() + "\n"
+	            );
+
+	            wydarzeniaDanegoDnia.add(eventInfo);
+	        }
+	    }
+
+	    return wydarzeniaDanegoDnia;
+	}
+	
+	public Color getKolorWydarzenia(String nazwaWydarzenia) {
+	    for (int i = 0; i < wydarzenia.size(); i++) {
+	        Wydarzenia wydarzenie = wydarzenia.get(i);
+	        if (wydarzenie.getNazwa().equals(nazwaWydarzenia)) {
+	            return wydarzenie.getColor();
+	        }
+	    }
+	    return null;
+	}
+	
+	public void addKategoria(String nazwa) throws SQLException {
+		int nextIdKategorii = getNastepneIdKategorii();
+		if(equalsArrayListKategorie(new Kategorie(nazwa))==false) {
+			Kategorie ka = new Kategorie(nextIdKategorii, nazwa);
+			db.dodajKategorie(kategorie, ka);
+			kategorie.add(ka);
+		} else {
+			System.out.println("Taka kategoria już istnieje");
+		}
+	}
+	public int getNastepneIdKategorii() {
+        int maxId = 0;
+
+        for (int i = 0; i < kategorie.size(); i++) {
+        	Kategorie kategoria = kategorie.get(i);
+            if (kategoria.getID() > maxId) {
+                maxId = kategoria.getID();
+            }
+        }
+
+        return maxId + 1;
+	}
+	
+	public void editKategoria(String nazwa, int nr) throws SQLException {
+		
+		kategorie.get(nr-1).setNazwa(nazwa);
+		
+		db.edytujKategorie(kategorie.get(nr-1));
+		
+		System.out.println("Pomyślnie edytowano wydarzenie");
+	}
+	
+	public void removeKategoria(int nr) throws SQLException {
+		
+		db.usunAssignKategorie(kategorie.get(nr-1).getID());
+		db.usunKategorie(kategorie.get(nr-1).getID());
+		for(int i=0;i<wydarzenia.size();i++) {
+            for(int j=0;j<kategorie.get(nr-1).getWydarzenia().size();j++) {
+                if(wydarzenia.get(i).equals(kategorie.get(nr-1).getExactWydarzenie(j))) {
+                    wydarzenia.get(i).dropKategoria(kategorie.get(nr-1));
+                }
+            }
+        }
+		kategorie.remove(nr-1);
+		
+		System.out.println("Pomyślnie edytowano wydarzenie");
+	}
+	
 }
 

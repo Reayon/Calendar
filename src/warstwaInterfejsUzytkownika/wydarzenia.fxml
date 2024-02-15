@@ -18,7 +18,7 @@
    <children>
       <VBox layoutX="17.0" layoutY="73.0" prefHeight="314.0" prefWidth="567.0">
          <children>
-            <TableView fx:id="tabelaWydarzen" prefHeight="314.0" prefWidth="252.0">
+            <TableView fx:id="tabelaWydarzen" prefHeight="348.0" prefWidth="481.0">
                <columns>
                   <TableColumn fx:id="nazwaColumn" editable="false" prefWidth="136.0" resizable="false" text="Nazwa" />
                   <TableColumn fx:id="miejsceColumn" editable="false" prefWidth="96.0" resizable="false" text="Miejsce" />
@@ -48,8 +48,10 @@
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="E" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator></MenuItem>
+                  <MenuItem fx:id="przypiszK" mnemonicParsing="false" onAction="#przypiszKontaktGUI" text="Przypisz Kontakt" />
                   <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem mnemonicParsing="false" onAction="#wczytajPlik" text="Wczytaj dane z pliku XML" />
+                  <MenuItem fx:id="wczytaj" mnemonicParsing="false" onAction="#wczytajPlik" text="Wczytaj dane z pliku XML" />
+                  <MenuItem fx:id="zapisz" mnemonicParsing="false" onAction="#zapiszDoPlikuXML" text="Zapisz dane do pliku XML" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Pomoc">
@@ -66,8 +68,8 @@
             <Font name="System Bold" size="34.0" />
          </font>
       </Text>
-      <Button layoutX="458.0" layoutY="2.0" mnemonicParsing="false" onAction="#switchToKalendarz" prefHeight="7.0" prefWidth="136.0" text="Powrót do kalendarza" />
-      <Button layoutX="376.0" layoutY="2.0" mnemonicParsing="false" onAction="#switchToKategorie" prefHeight="25.0" prefWidth="76.0" text="Kategorie" />
+      <Button layoutX="454.0" layoutY="2.0" mnemonicParsing="false" onAction="#switchToKalendarz" text="Powrót do kalendarza" />
+      <Button layoutX="387.0" layoutY="2.0" mnemonicParsing="false" onAction="#switchToKategorie" prefHeight="25.0" prefWidth="67.0" text="Kategorie" />
       <TextField fx:id="szukaj" layoutX="435.0" layoutY="36.0" />
    </children>
 </AnchorPane>

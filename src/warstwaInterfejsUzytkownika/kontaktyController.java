@@ -2,6 +2,7 @@ package warstwaInterfejsUzytkownika;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
@@ -10,6 +11,8 @@ import java.util.Optional;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamWriter;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -19,8 +22,6 @@ import org.xml.sax.SAXException;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
-import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -41,7 +42,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
-import javafx.scene.input.MouseButton;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -73,13 +73,6 @@ public class kontaktyController extends kalendarzController {
 
     @FXML
     private MenuItem Usun;
-    
-    @FXML
-    private TextField szukaj;
-    
-    @FXML
-    private Button przyciskSzukaj;
-    
     @FXML
     protected MenuItem aboutProgram;
 	
@@ -94,7 +87,6 @@ public class kontaktyController extends kalendarzController {
         });
         tabelaKontaktow.setRowFactory(tv -> {
             TableRow<Kontakt> row = new TableRow<>();
-            
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && (!row.isEmpty())) {
                     editKontakt();
@@ -121,7 +113,6 @@ public class kontaktyController extends kalendarzController {
         			listaKontaktow.add(kontakt);
         }
         tabelaKontaktow.setItems(listaKontaktow);
-        filtrujKontakty();
         });
         tabelaKontaktow.setOnMouseClicked(event -> {
             if (event.getClickCount() == 1) {
@@ -131,7 +122,6 @@ public class kontaktyController extends kalendarzController {
                     System.out.println("Wybrane ID: " + kontaktID);
                 }
             }
-           
         });
     }
         @FXML
@@ -181,11 +171,13 @@ public class kontaktyController extends kalendarzController {
 
             dialog.setResultConverter(dialogButton -> {
                 if (dialogButton == ButtonType.OK) {
+                	int nextId = dm.getNastepneIdKontaktu();
                     return new Kontakt(
                             imieTextField.getText(),
                             nazwiskoTextField.getText(),
                             Integer.parseInt(nrTextField.getText()),
-                            emailTextField.getText()
+                            emailTextField.getText(),
+                            nextId
                     );
                 }
                 return null;
@@ -195,11 +187,12 @@ public class kontaktyController extends kalendarzController {
             result.ifPresent(kontakt -> {
                 listaKontaktow.add(kontakt);
                 try {
-					dm.addKontakt(kontakt.getImie(), kontakt.getNazwisko(), kontakt.getNr(), kontakt.getEmail());
+					dm.addKontaktGUI(kontakt.getImie(), kontakt.getNazwisko(), kontakt.getNr(), kontakt.getEmail());
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+                tabelaKontaktow.refresh();
             });
         }
         
@@ -298,9 +291,7 @@ public class kontaktyController extends kalendarzController {
                     if (buttonType == ButtonType.OK) {
                         try {
                             dm.removeKontaktGUI(selectedKontakt.getID());
-                            listaKontaktow.remove(selectedKontakt);
-                            //tabelaKontaktow.getItems().remove(selectedIdx);
-                            tabelaKontaktow.refresh();
+                            tabelaKontaktow.getItems().remove(selectedIdx);
                         } catch (SQLException e) {
                             e.printStackTrace();
                         }
@@ -330,44 +321,6 @@ public class kontaktyController extends kalendarzController {
                 }
             }
         }
-        
-        @FXML
-        private void filtrujKontakty() {
-        	FilteredList<Kontakt> filteredData = new FilteredList<>(listaKontaktow);
-    		
-        	szukaj.textProperty().addListener((observable, oldValue, newValue) -> {
-    			filteredData.setPredicate(kontakt -> {
-    				// If filter text is empty, display all persons.
-    				if (newValue == null || newValue.isEmpty()) {
-    					return true;
-    				}
-    				
-    				// Compare first name and last name of every person with filter text.
-    				String lowerCaseFilter = newValue.toLowerCase();
-    				
-    				if (kontakt.getImie().toLowerCase().contains(lowerCaseFilter)) {
-    					return true; 
-    				} else if (kontakt.getNazwisko().toLowerCase().contains(lowerCaseFilter)) {
-    					return true; 
-    				} else if (Integer.toString(kontakt.getNr()).toLowerCase().contains(lowerCaseFilter)) {
-    					return true; // Filter matches last name.
-    				} else if (kontakt.getEmail().toLowerCase().contains(lowerCaseFilter)) {
-    					return true; // Filter matches last name. 
-    				}
-    				return false; // Does not match.
-    			});
-    		});
-            
-            SortedList<Kontakt> sortedData = new SortedList<>(filteredData);
-    		
-    		// 4. Bind the SortedList comparator to the TableView comparator.
-    		sortedData.comparatorProperty().bind(tabelaKontaktow.comparatorProperty());
-    		
-    		// 5. Add sorted (and filtered) data to the table.
-    		tabelaKontaktow.setItems(sortedData);
-            
-        }
-        
         private void wczytajKontakty(File file) throws ParserConfigurationException, SAXException, IOException, SQLException {
         	try (InputStream in = new FileInputStream(file)) {
         	    DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -395,6 +348,55 @@ public class kontaktyController extends kalendarzController {
         	        }
         	    }
         	}
+        }
+        
+        @FXML
+        private void zapiszDoPlikuXML(ActionEvent event) {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Pliki XML", "*.xml"));
+            File selectedFile = fileChooser.showSaveDialog(stage);
+
+            if (selectedFile != null) {
+                try {
+                    zapiszKontaktyDoXML(selectedFile);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        private void zapiszKontaktyDoXML(File file) {
+            try {
+                XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newInstance();
+                XMLStreamWriter writer = xmlOutputFactory.createXMLStreamWriter(new FileOutputStream(file), "utf-8");
+
+                writer.writeStartDocument("1.0");
+
+                writer.writeStartElement("ZapisaneKontakty");
+                for (int i = 0; i < listaKontaktow.size(); i++) {
+                    Kontakt kontakt = listaKontaktow.get(i);
+                    writer.writeStartElement("Kontakt");
+                    writer.writeStartElement("Imie");
+                    writer.writeCharacters(kontakt.getImie());
+                    writer.writeEndElement();
+                    writer.writeStartElement("Nazwisko");
+                    writer.writeCharacters(kontakt.getNazwisko());
+                    writer.writeEndElement();
+                    writer.writeStartElement("NumerTelefonu");
+                    writer.writeCharacters(Integer.toString(kontakt.getNr()));
+                    writer.writeEndElement();
+                    writer.writeStartElement("Email");
+                    writer.writeCharacters(kontakt.getEmail());
+                    writer.writeEndElement();
+                    writer.writeEndElement();
+                }
+                writer.writeEndElement();
+                writer.flush();
+                writer.close();
+                System.out.println("Kontakty zapisane do pliku XML.");
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
         }
         
         

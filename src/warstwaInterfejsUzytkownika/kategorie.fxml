@@ -48,7 +48,7 @@
             </Menu>
          </menus>
       </MenuBar>
-      <ButtonBar layoutX="333.0" layoutY="36.0" prefHeight="25.0" prefWidth="253.0">
+      <ButtonBar layoutX="347.0" layoutY="2.0" prefHeight="25.0" prefWidth="253.0">
          <buttons>
             <Button layoutX="135.0" layoutY="30.0" mnemonicParsing="false" onAction="#switchToWydarzenia" prefHeight="25.0" prefWidth="135.0" text="Powrót do wydarzeń" />
          </buttons>

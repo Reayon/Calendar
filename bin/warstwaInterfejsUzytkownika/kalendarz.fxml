@@ -60,9 +60,10 @@
         <items>
           <Button mnemonicParsing="false" onAction="#switchToKontakty" text="Kontakty" />
             <Button layoutX="10.0" layoutY="13.0" mnemonicParsing="false" onAction="#switchToWydarzenia" text="Wydarzenia" />
+            <Button mnemonicParsing="false" onAction="#switchToUstawienia" text="Ustawienia" />
             <Button fx:id="aboutButton" mnemonicParsing="false" text="O programie" />
         </items>
       </ToolBar>
-      <DatePicker fx:id="datePicker" layoutX="427.0" layoutY="40.0" />
+      <DatePicker fx:id="datePicker" layoutX="423.0" layoutY="8.0" />
    </children>
 </AnchorPane>

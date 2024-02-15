@@ -1,9 +1,22 @@
 package warstwaInterfejsUzytkownika;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -18,16 +31,22 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.Pair;
 import warstwaDanych.Kontakt;
 import warstwaLogiki.dataManager;
 
@@ -62,6 +81,8 @@ public class kalendarzController {
     private kontaktyController kontaktyController;
     @FXML
 	protected wydarzeniaController wydarzeniaController;
+    @FXML
+    protected ustawieniaController ustawieniaController;
 
     // Metoda wywoływana podczas inicjalizacji kontrolera.
     @FXML
@@ -86,7 +107,7 @@ public class kalendarzController {
     public void setDataManager(dataManager dm) {
         this.dm = dm;
     }
-
+    
     // Utworzenie siatki kalendarza.
     private void createCalendarGrid() {
         kalendarz.getChildren().clear();
@@ -118,10 +139,7 @@ public class kalendarzController {
     // Pobranie informacji o wybranym dniu.
     private String getDayInformation(String dayText) {
         int selectedDay = Integer.parseInt(dayText);
-        
-        System.out.println(selectedDay);
         LocalDate selectedDate = LocalDate.of(currentYearMonth.getYear(), currentYearMonth.getMonth(), selectedDay);
-        
 
         ArrayList<String> wydarzeniaDanegoDnia = dm.getWydarzeniaDanegoDnia(selectedDate);
         StringBuilder dayInfoBuilder = new StringBuilder();
@@ -160,7 +178,7 @@ public class kalendarzController {
         rok.setText(String.valueOf(currentYearMonth.getYear()));
         int dayCounter = 1;
         int blankDays = 0;
-        // Pętle zagnieżdżone aktualizujące etykiety w kalendarzu.
+     // Pętle zagnieżdżone aktualizujące etykiety w kalendarzu.
         for (int row = 0; row < 6; row++) {
             for (int col = 0; col < 7; col++) {
                 Label dayLabel = (Label) kalendarz.getChildren().get(7 * row + col);
@@ -257,6 +275,18 @@ public class kalendarzController {
         Parent root = loader.load();
         wydarzeniaController = loader.getController();
         wydarzeniaController.setDataManager(dm);
+        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
+    }
+    
+    // Przełączenie na widok ustawień.
+    public void switchToUstawienia(ActionEvent event) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("ustawienia.fxml"));
+        Parent root = loader.load();
+        ustawieniaController = loader.getController();
+        ustawieniaController.setDataManager(dm);
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         scene = new Scene(root);
         stage.setScene(scene);

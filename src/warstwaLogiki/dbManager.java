@@ -98,6 +98,21 @@ public class dbManager {
 		bufor.zapisZapytan(sql);
 	}
 	
+	public void dodajKontaktgui(ArrayList<Kontakt> ko, Kontakt k) throws SQLException{
+		Statement stat = polacz().createStatement();
+		int id = 0;
+		if(ko.isEmpty()) {
+			k.setID(id);
+		} else {
+			id = ko.get((ko.size()-1)).getID()+1;
+			k.setID(id);
+		}
+		String sql = "INSERT INTO kontakt (ID_kontaktu, imie, nazwisko, nr_tel, email) VALUES ('"+id+"', '"+k.getImie()+"', '"+k.getNazwisko()+"', "+k.getNr()+", '"+k.getEmail()+"');\n";
+		stat.executeUpdate(sql);
+		stat.close();
+        polacz().close();
+	}
+	
 	public void edytujKontakt(Kontakt k) throws SQLException{
 		int id = k.getID();
 		
@@ -155,6 +170,22 @@ public class dbManager {
 		String sql = "INSERT INTO wydarzenia (ID_wydarzenia, nazwa, miejsce, data, godzina, kolor) VALUES ('"+id+"', '"+w.getNazwa()+"', '"+w.getMiejsce()+"', '"+w.getData()+"', '"+w.getGodzina()+"', '"+w.getColor()+"');\n";
 		licznikZapytan++;
 		bufor.zapisZapytan(sql);
+	}
+	
+	public void dodajWydarzeniegui(ArrayList<Wydarzenia> wy, Wydarzenia w) throws SQLException{
+		Statement stat = polacz().createStatement();
+		int id = 0;
+		if(wy.isEmpty()) {
+			w.setID(id);
+		} else {
+			id = wy.get((wy.size()-1)).getID()+1;
+			w.setID(id);
+		}
+		
+		String sql = "INSERT INTO wydarzenia (ID_wydarzenia, nazwa, miejsce, data, godzina, kolor) VALUES ('"+id+"', '"+w.getNazwa()+"', '"+w.getMiejsce()+"', '"+w.getData()+"', '"+w.getGodzina()+"', '"+w.getColor()+"');\n";
+		stat.executeUpdate(sql);
+		stat.close();
+        polacz().close();
 	}
 	
 	public void edytujWydarzenie(Wydarzenia w) throws SQLException{
@@ -239,6 +270,12 @@ public class dbManager {
 	
 	public void przypiszKontaktdoWydarzenia(int k, int w) throws SQLException{
 		String sql = "INSERT INTO assign (ID_kontaktu, ID_wydarzenia) VALUES ('"+k+"', '"+w+"');\n";
+		licznikZapytan++;
+		bufor.zapisZapytan(sql);
+	}
+	
+	public void usunKontaktZWydarzenia(int idk, int idw) throws SQLException{
+		String sql = "DELETE FROM assign WHERE ID_wydarzenia = '"+idw+" AND ID_kontaktu = '"+idk+"';\n";
 		licznikZapytan++;
 		bufor.zapisZapytan(sql);
 	}

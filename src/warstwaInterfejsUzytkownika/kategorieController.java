@@ -31,6 +31,7 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import warstwaDanych.Kategorie;
+import warstwaDanych.Kontakt;
 import warstwaDanych.Wydarzenia;
 
 public class kategorieController extends wydarzeniaController {
@@ -111,9 +112,11 @@ public class kategorieController extends wydarzeniaController {
 
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == ButtonType.OK) {
+            	int nextId = dm.getNastepneIdKategorii();
                 return new Kategorie(
+                		nextId,
                         nazwaTextField.getText()
-);
+                		);
             }
             return null;
         });
