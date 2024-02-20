@@ -8,8 +8,6 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -30,6 +28,7 @@ import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -44,27 +43,28 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Spinner;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
-import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 import warstwaDanych.Kategorie;
 import warstwaDanych.Kontakt;
 import warstwaDanych.Wydarzenia;
-import warstwaLogiki.WydarzenieMiejsceComparator;
+import warstwaLogiki.XML;
+import warstwaLogiki.dataManager;
 
 public class wydarzeniaController extends kalendarzController {
 	// Lista obiektów klasy Wydarzenia
@@ -115,7 +115,7 @@ public class wydarzeniaController extends kalendarzController {
     private ComboBox<Kontakt> kontaktyComboBox;
 
     private kategorieController kategorieController;
-    
+
     public void initialize() {
     	// Wyłączenie opcji edycji i usunięcia na starcie
     	editW.setDisable(true);
@@ -143,13 +143,13 @@ public class wydarzeniaController extends kalendarzController {
             przypiszKontaktMenuItem.setOnAction(event -> przypiszKontaktGUI());
             MenuItem edytujWydarzenieMenuItem = new MenuItem("Edytuj Wydarzenie");
             edytujWydarzenieMenuItem.setOnAction(event -> edytujWydarzenieGUI());
-            //MenuItem usunKontaktZWydarzeniaMenuItem = new MenuItem("Usun przypisane kontakty");
-            //usunKontaktZWydarzeniaMenuItem.setOnAction(event -> usunKontaktZWydarzeniaGUI());
+            MenuItem usunKontaktZWydarzeniaMenuItem = new MenuItem("Usun przypisane kontakty");
+            usunKontaktZWydarzeniaMenuItem.setOnAction(event -> usunKontaktGUI());
 
             // Dodawanie pozycji do kontekstowego menu
             contextMenu.getItems().add(przypiszKontaktMenuItem);
             contextMenu.getItems().add(edytujWydarzenieMenuItem);
-            //contextMenu.getItems().add(usunKontaktZWydarzeniaMenuItem);
+            contextMenu.getItems().add(usunKontaktZWydarzeniaMenuItem);
 
             // Obsługa zdarzenia dla kliknięcia prawym przyciskiem myszy
             row.setOnMouseClicked(event -> {
@@ -221,13 +221,37 @@ public class wydarzeniaController extends kalendarzController {
         DatePicker datePicker = new DatePicker();
         datePicker.setPromptText("Data");
 
-        TextField godzinaTextField = new TextField();
-        godzinaTextField.setPromptText("Godzina");
+        Spinner<Integer> godzinaSpinner = new Spinner<>(0, 23, 12);
+        godzinaSpinner.setEditable(false);
+        godzinaSpinner.setPromptText("Godzina");
+
+        // Spinner dla minut
+        Spinner<Integer> minutaSpinner = new Spinner<>(0, 59, 0);
+        minutaSpinner.setEditable(false);
+        minutaSpinner.setPromptText("Minuta");
+        
+        // Ustawienie StringConverter dla Spinnera
+        minutaSpinner.getValueFactory().setConverter(new StringConverter<Integer>() {
+            @Override
+            public String toString(Integer value) {
+                // Formatowanie wartości do postaci dwóch cyfr (dodanie zera z przodu, jeśli potrzebne)
+                return String.format("%02d", value);
+            }
+
+            @Override
+            public Integer fromString(String string) {
+                // Konwersja z powrotem do Integera, jeśli to konieczne
+                return Integer.parseInt(string);
+            }
+        });
+
+        HBox timeBox = new HBox(8, godzinaSpinner, new Label(":"), minutaSpinner);
+        timeBox.setAlignment(Pos.CENTER);
         
         ColorPicker colorPick = new ColorPicker();
         colorPick.setPromptText("Kolor");
 
-        dialogPane.setContent(new ScrollPane(new VBox(8, nazwaTextField, miejsceTextField, datePicker, godzinaTextField, colorPick)));
+        dialogPane.setContent(new ScrollPane(new VBox(8, nazwaTextField, miejsceTextField, datePicker, timeBox, colorPick)));
 
         Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
         okButton.setDisable(true);
@@ -235,11 +259,11 @@ public class wydarzeniaController extends kalendarzController {
         // Nasłuchiwanie zmian w polach tekstowych i wybieraczu koloru
         nazwaTextField.textProperty().addListener((observable, oldValue, newValue) ->
         okButton.setDisable(newValue.trim().isEmpty() || miejsceTextField.getText().isEmpty() ||
-        		datePicker.getValue() == null || godzinaTextField.getText().isEmpty()));
+        		datePicker.getValue() == null || godzinaSpinner.getValue() == null || minutaSpinner.getValue() == null));
 
         miejsceTextField.textProperty().addListener((observable, oldValue, newValue) ->
         okButton.setDisable(nazwaTextField.getText().isEmpty() || newValue.trim().isEmpty() ||
-        		datePicker.getValue() == null || godzinaTextField.getText().isEmpty()));
+        		datePicker.getValue() == null || godzinaSpinner.getValue() == null || minutaSpinner.getValue() == null));
 
         datePicker.valueProperty().addListener((observable, oldValue, newValue) -> {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
@@ -247,21 +271,27 @@ public class wydarzeniaController extends kalendarzController {
 
             okButton.setDisable(
                     nazwaTextField.getText().isEmpty() || miejsceTextField.getText().isEmpty() ||
-                            formattedDate.isEmpty() || godzinaTextField.getText().isEmpty()
+                            formattedDate.isEmpty() || godzinaSpinner.getValue() == null || minutaSpinner.getValue() == null
             );
         });
 
-        godzinaTextField.textProperty().addListener((observable, oldValue, newValue) ->
+        godzinaSpinner.valueProperty().addListener((observable, oldValue, newValue) ->
         okButton.setDisable(nazwaTextField.getText().isEmpty() || miejsceTextField.getText().isEmpty() ||
-        		datePicker.getValue() == null || newValue.trim().isEmpty()));
+                datePicker.getValue() == null || newValue == null || minutaSpinner.getValue() == null));
+
+        minutaSpinner.valueProperty().addListener((observable, oldValue, newValue) ->
+        okButton.setDisable(nazwaTextField.getText().isEmpty() || miejsceTextField.getText().isEmpty() ||
+                datePicker.getValue() == null || godzinaSpinner.getValue() == null || newValue == null));
         
         // Konwersja koloru na szesnastkowy i weryfikacja, czy jest wybrany kolor
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == ButtonType.OK) {
             	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
                 LocalDate selectedDate = datePicker.getValue();
-             // Jeśli selectedDate nie jest null, to sformatuj datę przy użyciu podanego formatera,
-             // w przeciwnym razie ustaw formattedDate na pusty ciąg znaków.
+                String formattedHour = String.format("%02d", godzinaSpinner.getValue());
+                String formattedMinute = String.format("%02d", minutaSpinner.getValue());
+                String formattedTime = formattedHour + ":" + formattedMinute;
+
                 String formattedDate = selectedDate != null ? selectedDate.format(formatter) : "";
                 Color selectedColor = colorPick.getValue();
                 int nextId = dm.getNastepneIdWydarzenia();
@@ -269,7 +299,7 @@ public class wydarzeniaController extends kalendarzController {
                         nazwaTextField.getText(),
                         miejsceTextField.getText(),
                         formattedDate,
-                        godzinaTextField.getText(),
+                        formattedTime,
                         selectedColor,
                         nextId
                 );
@@ -281,7 +311,7 @@ public class wydarzeniaController extends kalendarzController {
         result.ifPresent(wydarzenie -> {
             listaWydarzen.add(wydarzenie);
             try {
-				dm.addWydarzenieZKolorem(wydarzenie.getNazwa(), wydarzenie.getMiejsce(), wydarzenie.getData(), wydarzenie.getGodzina(), wydarzenie.getColor());
+				dm.addWydarzenie(wydarzenie.getNazwa(), wydarzenie.getMiejsce(), wydarzenie.getData(), wydarzenie.getGodzina(), wydarzenie.getColor());
             } catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -292,6 +322,7 @@ public class wydarzeniaController extends kalendarzController {
     @FXML
     private void przypiszKontaktGUI() {
     	Wydarzenia selectedWydarzenie = tabelaWydarzen.getSelectionModel().getSelectedItem();
+    	System.out.print(selectedWydarzenie);
         if (selectedWydarzenie != null) {
             Dialog<Wydarzenia> dialog = new Dialog<>();
             dialog.setTitle("Przypisz kontakt do wydarzenia");
@@ -334,16 +365,14 @@ public class wydarzeniaController extends kalendarzController {
             	
                 if (dialogButton == ButtonType.OK) {
                 	Kontakt selectedContact = kontaktyComboBox.getSelectionModel().getSelectedItem();
-                        
-                        // Odświeżenie widoku tabeli
-                        tabelaWydarzen.refresh();
-
                         try {
 							dm.dodajKontaktDoWydarzeniaGUI(selectedContact, selectedWydarzenie);
 						} catch (SQLException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
+                        // Odświeżenie widoku tabeli
+                        tabelaWydarzen.refresh();
                 }
             return null;
             });
@@ -351,8 +380,79 @@ public class wydarzeniaController extends kalendarzController {
         }
     }
     
+    @FXML
+    private void usunKontaktGUI() {
+        Wydarzenia selectedWydarzenie = tabelaWydarzen.getSelectionModel().getSelectedItem();
+        if (selectedWydarzenie != null && selectedWydarzenie.getKontaktySize() > 0) {
+            // Okno dialogowe do wyboru kontaktu do usunięcia
+            Dialog<Kontakt> dialog = new Dialog<>();
+            dialog.setTitle("Usuń przypisany kontakt");
+            dialog.setHeaderText("Wybierz kontakt do usunięcia z wydarzenia:");
 
-    
+            Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
+            stage.getIcons().add(new Image("calendar-icon.png"));
+
+            DialogPane dialogPane = dialog.getDialogPane();
+            dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+            ComboBox<Kontakt> kontaktyComboBox = new ComboBox<>();
+            kontaktyComboBox.setPromptText("Wybierz kontakt");
+            kontaktyComboBox.getItems().addAll(selectedWydarzenie.getArrayKontakt());
+
+            kontaktyComboBox.setCellFactory(lv -> new ListCell<Kontakt>() {
+                @Override
+                protected void updateItem(Kontakt kontakt, boolean empty) {
+                    super.updateItem(kontakt, empty);
+                    setText(empty ? "" : kontakt.getImie() + " " + kontakt.getNazwisko());
+                }
+            });
+
+            kontaktyComboBox.setButtonCell(new ListCell<Kontakt>() {
+                @Override
+                protected void updateItem(Kontakt kontakt, boolean empty) {
+                    super.updateItem(kontakt, empty);
+                    setText(empty ? "" : kontakt.getImie() + " " + kontakt.getNazwisko());
+                }
+            });
+
+            dialogPane.setContent(new ScrollPane(new VBox(8, kontaktyComboBox)));
+
+            Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
+            okButton.setDisable(true);
+
+            // Nasłuchiwanie zmian w wybieraczu kontaktów
+            kontaktyComboBox.valueProperty().addListener((observable, oldValue, newValue) ->
+                    okButton.setDisable(newValue == null));
+
+            dialog.setResultConverter(dialogButton -> {
+                if (dialogButton == ButtonType.OK) {
+                    Kontakt selectedContact = kontaktyComboBox.getSelectionModel().getSelectedItem();
+                        try {
+							dm.usunKontaktZWydarzeniaGUI(selectedContact, selectedWydarzenie);
+						} catch (SQLException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+                    // Odświeżenie widoku tabeli
+                    tabelaWydarzen.refresh();
+                }
+                return null;
+            });
+
+            dialog.showAndWait();
+        } else {
+            // Wyświetl informację, że nie ma przypisanych kontaktów do usuwania
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+        	stage.getIcons().add(new Image("calendar-icon.png"));
+            alert.setTitle("Brak przypisanych kontaktów");
+            alert.setHeaderText(null);
+            alert.setContentText("To wydarzenie nie ma przypisanych kontaktów do usunięcia.");
+
+            alert.showAndWait();
+        }
+    }
+
     @FXML
     private void edytujWydarzenieGUI() {
     	Wydarzenia selectedWydarzenie = tabelaWydarzen.getSelectionModel().getSelectedItem();
@@ -373,22 +473,42 @@ public class wydarzeniaController extends kalendarzController {
             TextField miejsceTextField = new TextField(selectedWydarzenie.getMiejsce());
             miejsceTextField.setPromptText("Miejsce");
             
-            // Założenie, że selectedWydarzenie.getData() zwraca String
             DatePicker datePicker = new DatePicker();
             datePicker.setPromptText("Data");
-
-            // Założenie, że selectedWydarzenie.getData() zwraca String
             LocalDate selectedDate = LocalDate.parse(selectedWydarzenie.getData(), DateTimeFormatter.ofPattern("dd.MM.yyyy"));
             datePicker.setValue(selectedDate);
 
             
-            TextField godzinaTextField = new TextField(selectedWydarzenie.getGodzina());
-            godzinaTextField.setPromptText("Godzina");
+            Spinner<Integer> godzinaSpinner = new Spinner<>(0, 23, 12);
+            godzinaSpinner.setEditable(false);
+            godzinaSpinner.setPromptText("Godzina");
+
+            // Spinner dla minut
+            Spinner<Integer> minutaSpinner = new Spinner<>(0, 59, 0);
+            minutaSpinner.setEditable(false);
+            minutaSpinner.setPromptText("Minuta");
+            
+            // Ustawienie StringConverter dla Spinnera
+            minutaSpinner.getValueFactory().setConverter(new StringConverter<Integer>() {
+                @Override
+                public String toString(Integer value) {
+                    // Formatowanie wartości do postaci dwóch cyfr (dodanie zera z przodu, jeśli potrzebne)
+                    return String.format("%02d", value);
+                }
+
+                @Override
+                public Integer fromString(String string) {
+                    // Konwersja z powrotem do Integera, jeśli to konieczne
+                    return Integer.parseInt(string);
+                }
+            });
+            HBox timeBox = new HBox(8, godzinaSpinner, new Label(":"), minutaSpinner);
+            timeBox.setAlignment(Pos.CENTER);
             
             ColorPicker colorPick = new ColorPicker();
             colorPick.setValue(selectedWydarzenie.getColor());
 
-            dialogPane.setContent(new ScrollPane(new VBox(8, nazwaTextField, miejsceTextField, datePicker, godzinaTextField, colorPick)));
+            dialogPane.setContent(new ScrollPane(new VBox(8, nazwaTextField, miejsceTextField, datePicker, timeBox, colorPick)));
 
             Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
             okButton.setDisable(true);
@@ -396,11 +516,11 @@ public class wydarzeniaController extends kalendarzController {
             // Nasłuchiwanie zmian w polach tekstowych, wybieraczu daty i wybieraczu koloru
             nazwaTextField.textProperty().addListener((observable, oldValue, newValue) ->
                     okButton.setDisable(newValue.trim().isEmpty() || miejsceTextField.getText().isEmpty() ||
-                    		 datePicker.getValue() == null || godzinaTextField.getText().isEmpty()));
+                    		 datePicker.getValue() == null || godzinaSpinner.getValue() == null || minutaSpinner.getValue() == null));
 
             miejsceTextField.textProperty().addListener((observable, oldValue, newValue) ->
                     okButton.setDisable(nazwaTextField.getText().isEmpty() || newValue.trim().isEmpty() ||
-                    		 datePicker.getValue() == null || godzinaTextField.getText().isEmpty()));
+                    		 datePicker.getValue() == null || godzinaSpinner.getValue() == null || minutaSpinner.getValue() == null));
 
             datePicker.valueProperty().addListener((observable, oldValue, newValue) -> {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
@@ -408,33 +528,39 @@ public class wydarzeniaController extends kalendarzController {
 
                 okButton.setDisable(
                         nazwaTextField.getText().isEmpty() || miejsceTextField.getText().isEmpty() ||
-                                formattedDate.isEmpty() || godzinaTextField.getText().isEmpty()
+                                formattedDate.isEmpty() || godzinaSpinner.getValue() == null || minutaSpinner.getValue() == null
                 );
             });
 
-            godzinaTextField.textProperty().addListener((observable, oldValue, newValue) ->
-                    okButton.setDisable(nazwaTextField.getText().isEmpty() || miejsceTextField.getText().isEmpty() ||
-                    		datePicker.getValue() == null || newValue.trim().isEmpty()));
+            godzinaSpinner.valueProperty().addListener((observable, oldValue, newValue) ->
+            okButton.setDisable(nazwaTextField.getText().isEmpty() || miejsceTextField.getText().isEmpty() ||
+                    datePicker.getValue() == null || newValue == null || minutaSpinner.getValue() == null));
+
+            minutaSpinner.valueProperty().addListener((observable, oldValue, newValue) ->
+            okButton.setDisable(nazwaTextField.getText().isEmpty() || miejsceTextField.getText().isEmpty() ||
+                    datePicker.getValue() == null || godzinaSpinner.getValue() == null || newValue == null));
 
             colorPick.valueProperty().addListener((observable, oldValue, newValue) -> {
                 okButton.setDisable(
                         nazwaTextField.getText().isEmpty() || miejsceTextField.getText().isEmpty() ||
-                        datePicker.getValue() == null || godzinaTextField.getText().isEmpty() || newValue == null
+                        datePicker.getValue() == null || godzinaSpinner.getValue() == null || minutaSpinner.getValue() == null || newValue == null
                 );
             });
-            //colorPick.isPressed().okButton.setDisable();
             
             dialog.setResultConverter(dialogButton -> {
             	
                 if (dialogButton == ButtonType.OK) {
                 	 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-                     String formattedDate = selectedDate != null ? selectedDate.format(formatter) : "";
+                	 String formattedDate = datePicker.getValue() != null ? datePicker.getValue().format(formatter) : "";
+                	 String formattedHour = String.format("%02d", godzinaSpinner.getValue());
+                     String formattedMinute = String.format("%02d", minutaSpinner.getValue());
+                     String formattedTime = formattedHour + ":" + formattedMinute;
                      Color selectedColor = colorPick.getValue();
                     return new Wydarzenia(
                     		nazwaTextField.getText(),
                             miejsceTextField.getText(),
                             formattedDate,
-                            godzinaTextField.getText(),
+                            formattedTime,
                             selectedColor,
                             selectedWydarzenie.getID()
                     ); 
@@ -471,6 +597,8 @@ public class wydarzeniaController extends kalendarzController {
         	
         	// Okno dialogowe potwierdzające usunięcie
         	Alert alert = new Alert(AlertType.CONFIRMATION);
+        	Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+        	stage.getIcons().add(new Image("calendar-icon.png"));
             alert.setTitle("Potwierdzenie usunięcia");
             alert.setHeaderText("Czy na pewno chcesz usunąć wybrane wydarzenie?");
             alert.setContentText("Tej operacji nie można cofnąć.");
@@ -483,7 +611,7 @@ public class wydarzeniaController extends kalendarzController {
                         dm.removeWydarzenieGUI(selectedWydarzenie.getID());
                         
                         // Usunięcie wydarzenia z listy i odświeżenie tabeli
-                        tabelaWydarzen.getItems().remove(selectedIdx);
+                        listaWydarzen.remove(selectedIdx);
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
@@ -491,6 +619,7 @@ public class wydarzeniaController extends kalendarzController {
             });
         }
     }
+
     
     //---------------------------------Wczytywanie i zapisywanie-------------------------------------
     
@@ -504,16 +633,18 @@ public class wydarzeniaController extends kalendarzController {
         // Wczytanie wydarzeń z pliku, jeśli został wybrany plik
         if (selectedFile != null) {
             try {
-                wczytajWydarzenia(selectedFile);
+				wczytajWydarzenia(selectedFile);
+				tabelaWydarzen.refresh();
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
-
-    private void wczytajWydarzenia(File file) throws ParserConfigurationException, SAXException, IOException, SQLException {
+    
+    public void wczytajWydarzenia(File file) throws ParserConfigurationException, SAXException, IOException, SQLException {
         try (FileInputStream in = new FileInputStream(file)) {
-        	 // Tworzenie parsera XML
+        	dataManager dataManager = new dataManager();
+        	// Tworzenie parsera XML
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document doc = dBuilder.parse(in);
@@ -524,22 +655,22 @@ public class wydarzeniaController extends kalendarzController {
             // Przetwarzanie każdego węzła reprezentującego wydarzenie
             for (int i = 0; i < eventNodes.getLength(); i++) {
                 Element eventElement = (Element) eventNodes.item(i);
-                
+                String ID_wyd = eventElement.getElementsByTagName("ID_wydarzenia").item(0).getTextContent();
+                int id_wyd = Integer.parseInt(ID_wyd);
                 String nazwa = eventElement.getElementsByTagName("Nazwa").item(0).getTextContent();
                 String miejsce = eventElement.getElementsByTagName("Miejsce").item(0).getTextContent();
                 String data = eventElement.getElementsByTagName("Data").item(0).getTextContent();
                 String godzina = eventElement.getElementsByTagName("Godzina").item(0).getTextContent();
                 String kolor = eventElement.getElementsByTagName("Kolor").item(0).getTextContent();
                 
-                
-                Wydarzenia wydarzenie = new Wydarzenia(nazwa, miejsce, data, godzina, Color.valueOf(kolor));
+                Wydarzenia wydarzenie = new Wydarzenia(nazwa, miejsce, data, godzina, Color.valueOf(kolor), id_wyd);
 
                 // Pobieranie informacji o kontaktach
                 NodeList contactNodes = eventElement.getElementsByTagName("Kontakt"+i);
                 ArrayList<Kontakt> kontakty = new ArrayList<Kontakt>();
                 for (int j = 0; j < contactNodes.getLength(); j++) {
                     Element contactElement = (Element) contactNodes.item(j);
-                    String id = eventElement.getElementsByTagName("ID").item(0).getTextContent();
+                    String id = eventElement.getElementsByTagName("ID_kontaktu").item(0).getTextContent();
                     int ID = Integer.parseInt(id);
                     String imie = contactElement.getElementsByTagName("Imie").item(0).getTextContent();
             		String nazwisko = contactElement.getElementsByTagName("Nazwisko").item(0).getTextContent();
@@ -557,17 +688,18 @@ public class wydarzeniaController extends kalendarzController {
                 // Dodanie wydarzenia do listy i bazy danych, jeśli nie istnieje
                 if (!eventExists) {
                     listaWydarzen.add(wydarzenie);
-                    dm.addWydarzenieZKoloremZKontaktem(nazwa, miejsce, data, godzina, Color.valueOf(kolor), kontakty, wydarzenie.getID());
+                    dm.addWydarzenieZKoloremZKontaktem(nazwa, miejsce, data, godzina, Color.valueOf(kolor), kontakty, id_wyd);
+
                     for(int k = 0;k<kontakty.size();k++)
                     {
                     	System.out.println(kontakty.get(k));
-                    	dm.assignKontaktToWydarzenia(k+1, wydarzenie.getID()+1);
+                    	dataManager.assignKontaktToWydarzenia(k+1, wydarzenie.getID()+1);
                     }
                 }
             }
         }
     }
-    
+
     @FXML
     private void filtrujWydarzenia() {
     	FilteredList<Wydarzenia> filteredData = new FilteredList<>(listaWydarzen, p -> true);
@@ -607,14 +739,14 @@ public class wydarzeniaController extends kalendarzController {
 
         if (selectedFile != null) {
             try {
-                zapiszWydarzenDoXML(selectedFile);
+                zapiszWydarzenDoXMLGUI(selectedFile);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
-
-    private void zapiszWydarzenDoXML(File file) {
+    
+    public void zapiszWydarzenDoXMLGUI(File file) {
     	try {
 			XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newInstance();
 			XMLStreamWriter writer = xmlOutputFactory.createXMLStreamWriter(new FileOutputStream(file), "utf-8");
@@ -625,6 +757,9 @@ public class wydarzeniaController extends kalendarzController {
 			for (int i = 0; i < listaWydarzen.size(); i++) {
 				Wydarzenia aktualneWydarzenie = listaWydarzen.get(i);
 				writer.writeStartElement("Wydarzenie");
+				writer.writeStartElement("ID_wydarzenia");
+				writer.writeCharacters(Integer.toString(aktualneWydarzenie.getID()));
+				writer.writeEndElement();
 				writer.writeStartElement("Nazwa");
 				writer.writeCharacters(aktualneWydarzenie.getNazwa());
 				writer.writeEndElement();
@@ -644,7 +779,7 @@ public class wydarzeniaController extends kalendarzController {
 				for (int j = 0; j < listaWydarzen.get(i).getKontaktySize(); j++) {
 					Kontakt aktualnyKontakt = listaWydarzen.get(i).getExactKontakt(j);
 					writer.writeStartElement("Kontakt"+i);
-					writer.writeStartElement("ID");
+					writer.writeStartElement("ID_kontaktu");
 					writer.writeCharacters(Integer.toString(aktualnyKontakt.getID()));
 					writer.writeEndElement();
 					writer.writeStartElement("Imie");

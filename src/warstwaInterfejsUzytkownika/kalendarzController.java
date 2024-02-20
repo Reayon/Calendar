@@ -1,28 +1,19 @@
 package warstwaInterfejsUzytkownika;
 
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-
+import java.util.Timer;
+import java.util.TimerTask;
+import static java.time.temporal.ChronoUnit.MINUTES;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -31,27 +22,27 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.DatePicker;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.stage.FileChooser;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import javafx.util.Pair;
-import warstwaDanych.Kontakt;
 import warstwaLogiki.dataManager;
 
 public class kalendarzController {
+	protected int przypomnijWyd;
+	
+	protected TimerThread thread = new TimerThread();
+	
     protected dataManager dm = new dataManager();
+    
+	protected static boolean czyDziała;
+	
+	protected static boolean czyDziała1;
+	
     private YearMonth currentYearMonth;
     
     @FXML
@@ -86,18 +77,23 @@ public class kalendarzController {
 
     // Metoda wywoływana podczas inicjalizacji kontrolera.
     @FXML
-    private void initialize() {
+    private void initialize() throws FileNotFoundException {
+    	dm.wykonajZBufora();
+    	odczytUstawien();
         currentYearMonth = YearMonth.now();
         createCalendarGrid();
         updateCalendar();
         centerGridPane();
         datePicker.setValue(LocalDate.now());
         datePicker.setOnAction(this::handleDatePickerAction);
-        Platform.runLater(() -> {
-            System.out.println();
-        });
         aboutButton.setOnAction(event -> showAboutDialog());
-        
+        if(czyDziała==false) {
+        	thread.setDaemon(true);
+        	thread.start();
+    		
+        	czyDziała = true;
+        }
+        wydarzenieAlert();
     }
     private void handleDatePickerAction(ActionEvent event) {
         currentYearMonth = YearMonth.from(datePicker.getValue());
@@ -111,7 +107,6 @@ public class kalendarzController {
     // Utworzenie siatki kalendarza.
     private void createCalendarGrid() {
         kalendarz.getChildren().clear();
-        String[] daysOfWeek = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
 
         // Pętle zagnieżdżone tworzące etykiety dla każdego dnia w siatce 6x7.
         for (int row = 0; row < 6; row++) {
@@ -197,9 +192,8 @@ public class kalendarzController {
                 final int blank = blankDays;
                 // Podświetlenie obecnego dnia niebieskim obramowaniem.
                 if (LocalDate.now().getMonth().equals(currentYearMonth.getMonth()) &&
-                        LocalDate.now().getYear() == currentYearMonth.getYear() &&
-                        dayLabel.getText().equals(Integer.toString(LocalDate.now().getDayOfMonth()))) {
-                	//dayLabel.setStyle("-fx-border-color: blue; -fx-border-width: 2px;");
+                    LocalDate.now().getYear() == currentYearMonth.getYear() &&
+                    dayLabel.getText().equals(Integer.toString(LocalDate.now().getDayOfMonth()))) {
                 	dayLabel.setBorder(new Border(new BorderStroke(Color.BLUE, BorderStrokeStyle.SOLID, null, null)));
                 } else {
                     dayLabel.setStyle("");
@@ -213,7 +207,7 @@ public class kalendarzController {
                     		kalendarz.getChildren().get(dayIndex+blank-1).setStyle("-fx-background-color: "+toCssColor(dm.pobierzListeWydarzen().get(i).getColor())+";");
                     	}
                     }
-                 });
+                });
             }
         }
     }
@@ -256,8 +250,56 @@ public class kalendarzController {
         		+ "Grupa: 3\n");
         alert.showAndWait();
     }
+    
+    protected void wydarzenieAlert() {
+    	System.out.println(przypomnijWyd);
+    	Platform.runLater(()->{ 
+    		for(int i=0; i<dm.pobierzListeWydarzen().size();i++) {
+    			int roznica = Math.abs((int) MINUTES.between(thread.getTime(), dm.getWydarzeniaTime(i)))+1;
+        		if(roznica==przypomnijWyd){
+        	   		Alert alert = new Alert(AlertType.INFORMATION);
+        		        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+        		        stage.getIcons().add(new Image("calendar-icon.png"));
+        		        alert.setTitle("Przypomnienie o wydarzeniu");
+        		        alert.setHeaderText("Przypomnienie");
+        		        alert.setContentText("Wydarzenie "+dm.pobierzListeWydarzen().get(i).getNazwa()+" rozpocznie się za "+roznica+" minut");
+        		        alert.showAndWait();
+        		}
+    		}
+        });
+    	
+    }
+    protected void odczytUstawien() {                     // bufor (tablica) na odczytane znaki
+    	 String sciezkaDoPliku = "./src/ustawienia.txt";
+    	 int liczba;
+         try (BufferedReader br = new BufferedReader(new FileReader(sciezkaDoPliku))) {
+             // Wczytaj linijkę z pliku
+             String linia = br.readLine();
 
-    // Przełączenie na widok kontakty.
+             if (linia != null) {
+                 // Spróbuj przekształcić wczytaną linijkę na liczbę
+                 try {
+                     liczba = Integer.parseInt(linia);
+                     System.out.println("Wczytana liczba: " + liczba);
+                     setPrzypomnijWyd(liczba);
+                 } catch (NumberFormatException e) {
+                     System.err.println("Błąd przekształcenia na liczbę: " + e.getMessage());
+                 }
+             } else {
+                 System.err.println("Plik jest pusty");
+             }
+
+         } catch (IOException e) {
+             System.err.println("Błąd odczytu pliku: " + e.getMessage());
+         }
+    }
+	public int getPrzypomnijWyd() {
+		return przypomnijWyd;
+	}
+	public void setPrzypomnijWyd(int przypomnijWyd) {
+		this.przypomnijWyd = przypomnijWyd;
+	}
+	// Przełączenie na widok kontakty.
     public void switchToKontakty(ActionEvent event) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("kontakty.fxml"));
         Parent root = loader.load();

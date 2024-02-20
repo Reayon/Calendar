@@ -17,13 +17,6 @@ public class Wydarzenia implements Comparable<Wydarzenia> {
 	private int id;
 	
 
-	public Wydarzenia(String nazwa, String miejsce, String data, String godzina) {
-		this.nazwa = nazwa;
-		this.miejsce = miejsce;
-		this.data = data;
-		this.godzina = godzina;
-		kontakty = new ArrayList<Kontakt>();
-	}
 	public Wydarzenia(String nazwa, String miejsce, String data, String godzina, Color color) {
 		this.nazwa = nazwa;
 		this.miejsce = miejsce;

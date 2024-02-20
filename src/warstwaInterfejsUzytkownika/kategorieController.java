@@ -17,8 +17,10 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ColorPicker;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
@@ -101,17 +103,40 @@ public class kategorieController extends wydarzeniaController {
 
         TextField nazwaTextField = new TextField();
         nazwaTextField.setPromptText("Nazwa");
+        
+        ComboBox<Wydarzenia> wydarzeniaComboBox = new ComboBox<>();
+        wydarzeniaComboBox.setPromptText("Wybierz wydarzenie");
+        wydarzeniaComboBox.getItems().addAll(dm.pobierzListeWydarzen());
 
-        dialogPane.setContent(new ScrollPane(new VBox(8, nazwaTextField)));
+        wydarzeniaComboBox.setCellFactory(lv -> new ListCell<Wydarzenia>() {
+            @Override
+            protected void updateItem(Wydarzenia wydarzenia, boolean empty) {
+                super.updateItem(wydarzenia, empty);
+                setText(empty ? "" : wydarzenia.getNazwa());
+            }
+        });
+        wydarzeniaComboBox.setButtonCell(new ListCell<Wydarzenia>() {
+            @Override
+            protected void updateItem(Wydarzenia wydarzenia, boolean empty) {
+                super.updateItem(wydarzenia, empty);
+                setText(empty ? "" : wydarzenia.getNazwa());
+            }
+        });
+
+        dialogPane.setContent(new ScrollPane(new VBox(8, nazwaTextField, wydarzeniaComboBox)));
 
         Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
         okButton.setDisable(true);
         
         nazwaTextField.textProperty().addListener((observable, oldValue, newValue) ->
         okButton.setDisable(newValue.trim().isEmpty()));
+        
+        wydarzeniaComboBox.valueProperty().addListener((observable, oldValue, newValue) ->
+        okButton.setDisable(newValue == null));
 
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == ButtonType.OK) {
+            	Wydarzenia selectedWyd = wydarzeniaComboBox.getSelectionModel().getSelectedItem();
             	int nextId = dm.getNastepneIdKategorii();
                 return new Kategorie(
                 		nextId,

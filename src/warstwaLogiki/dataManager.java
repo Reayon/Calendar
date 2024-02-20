@@ -3,7 +3,9 @@ package warstwaLogiki;
 import java.io.FileNotFoundException;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -13,6 +15,7 @@ import javafx.scene.paint.Color;
 import warstwaDanych.Kategorie;
 import warstwaDanych.Kontakt;
 import warstwaDanych.Wydarzenia;
+import warstwaInterfejsUzytkownika.wydarzeniaController;
 
 public class dataManager {
 	
@@ -45,7 +48,11 @@ public class dataManager {
     }
 	
 	public void wykonajZBufora() throws FileNotFoundException {
-		if(db.getLicznikZapytan() > 10) {
+		if(db.getBufor().isEmpty()==false) {
+			if(db.getLicznikZapytan() > 10) {
+				db.wykonajZapytania();
+				db.wyzerujLicznikZapytan();
+			}
 			db.wykonajZapytania();
 			db.wyzerujLicznikZapytan();
 		}
@@ -112,7 +119,7 @@ public class dataManager {
 		return false;
 	}
 	
-	private boolean equalsArrayListWydarzenia(Wydarzenia w) throws SQLException {
+	public boolean equalsArrayListWydarzenia(Wydarzenia w) throws SQLException {
 		for (int i = 0; i < wydarzenia.size(); i++) {
 			if(wydarzenia.get(i).equals(w)) {
 				return true;
@@ -173,10 +180,9 @@ public class dataManager {
 	}
 	
 	
-	public void addWydarzenie(String nazwa, String miejsce, String data, String godzina) throws SQLException {
-		
-		if(equalsArrayListWydarzenia(new Wydarzenia(nazwa, miejsce, data, godzina))==false) {
-			Wydarzenia wo = new Wydarzenia(nazwa, miejsce, data, godzina);
+	public void addWydarzenie(String nazwa, String miejsce, String data, String godzina, Color kolor) throws SQLException {
+		if(equalsArrayListWydarzenia(new Wydarzenia(nazwa, miejsce, data, godzina, kolor))==false) {
+			Wydarzenia wo = new Wydarzenia(nazwa, miejsce, data, godzina, kolor);
 			db.dodajWydarzenie(wydarzenia, wo);
 			wydarzenia.add(wo);
 			xml.zapisWydarzeniaDoXML(wydarzenia);
@@ -217,7 +223,6 @@ public class dataManager {
 	}
 	
 	public void assignKontaktToWydarzenia(int nr1, int nr2) throws SQLException {
-		
 		if(kontakty.get(nr1-1).equalsWydarzenia(wydarzenia.get(nr2-1))==false) {
 			kontakty.get(nr1-1).setWydarzenie(wydarzenia.get(nr2-1));
 			wydarzenia.get(nr2-1).setKontakt(kontakty.get(nr1-1));
@@ -348,18 +353,6 @@ public class dataManager {
 	    }
 	}
 	
-	public void addWydarzenieZKolorem(String nazwa, String miejsce, String data, String godzina, Color color) throws SQLException {
-		int nextIdWydarzenia = getNastepneIdWydarzenia();
-		if(equalsArrayListWydarzenia(new Wydarzenia(nazwa, miejsce, data, godzina, color))==false) {
-			Wydarzenia wo = new Wydarzenia(nazwa, miejsce, data, godzina, color, nextIdWydarzenia);
-			db.dodajWydarzeniegui(wydarzenia, wo);
-			wydarzenia.add(wo);
-			xml.zapisWydarzeniaDoXML(wydarzenia);
-			
-		} else {
-			System.out.println("Takie wydarzenie już istnieje");
-		}
-	}
 	public int getNastepneIdWydarzenia() {
         int maxId = 0;
 
@@ -375,7 +368,6 @@ public class dataManager {
 	
 	//Do wczytania pliku XML w GUI
 	public void addWydarzenieZKoloremZKontaktem(String nazwa, String miejsce, String data, String godzina, Color color, ArrayList<Kontakt> kontakty, int id) throws SQLException {
-		
 		if(equalsArrayListWydarzenia(new Wydarzenia(nazwa, miejsce, data, godzina, color, id, kontakty))==false) {
 			Wydarzenia wo = new Wydarzenia(nazwa, miejsce, data, godzina, color, id ,kontakty);
 			db.dodajWydarzeniegui(wydarzenia, wo);
@@ -390,30 +382,24 @@ public class dataManager {
 		}
 	}
 	
-	public void dodajKontaktDoWydarzeniaGUI(Kontakt selectedContact, Wydarzenia selectedWydarzenie) throws SQLException {
-	    if (selectedContact.equalsWydarzenia(selectedWydarzenie)==false) {
-	        if (!selectedWydarzenie.equalsKontakty(selectedContact)) {
-	            selectedWydarzenie.setKontakt(selectedContact);
-	            db.przypiszKontaktdoWydarzenia(selectedContact.getID(), selectedWydarzenie.getID());
-	            xml.zapisWydarzeniaDoXML(wydarzenia);
-	        } else {
-	            System.out.println("Ten kontakt został już dodany do tego wydarzenia");
-	        }
-	    }
+	public void dodajKontaktDoWydarzeniaGUI(Kontakt kontakt, Wydarzenia wydarzenie) throws SQLException {
+		if(kontakt.equalsWydarzenia(wydarzenie)==false) {
+			kontakt.setWydarzenie(wydarzenie);
+			wydarzenie.setKontakt(kontakt);
+			xml.zapisKontaktowDoXML(kontakty);
+			xml.zapisWydarzeniaDoXML(wydarzenia);
+			db.przypiszKontaktdoWydarzenia(kontakt.getID(), wydarzenie.getID());
+		} else {
+			System.out.println("Ten kontakt został już dodany do tego wydarzenia");
+		}
 	}
 	
-	public void usunKontaktZWydarzeniaGUI(int kontaktIndex, int wydarzenieIndex) throws SQLException {
-	    Kontakt kontakt = kontakty.get(kontaktIndex);
-	    Wydarzenia wydarzenie = wydarzenia.get(wydarzenieIndex);
-
-	    // Remove the assignment from the database
-	    db.usunKontaktZWydarzenia(kontakt.getID(), wydarzenie.getID());
-
-	    // Remove the contact from the event in the list
+	public void usunKontaktZWydarzeniaGUI(Kontakt kontakt, Wydarzenia wydarzenie) throws SQLException {
 	    wydarzenie.dropEqualKontakt(kontakt);
-
-	    // Update XML
+	    kontakt.dropExactWydarzenie(wydarzenie);
 	    xml.zapisWydarzeniaDoXML(wydarzenia);
+	    xml.zapisKontaktowDoXML(kontakty);
+	    db.usunKontaktZWydarzenia(kontakt.getID(), wydarzenie.getID());
 	}
 	
 	public void editWydarzenieZKolorem(String nazwa, String miejsce, String data, String godzina, Color color, int id) throws SQLException {
@@ -513,6 +499,12 @@ public class dataManager {
 	    }
 	    return null;
 	}
+	
+	public LocalTime getWydarzeniaTime(int i) {
+    	DateTimeFormatter timeformatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT);
+    	LocalTime time = LocalTime.parse(wydarzenia.get(i).getGodzina());
+    	return time;
+    }
 	
 	public void addKategoria(String nazwa) throws SQLException {
 		int nextIdKategorii = getNastepneIdKategorii();

@@ -23,13 +23,11 @@ public class Glowna {
 		ArrayList<Wydarzenia> wydarzenia = new ArrayList<Wydarzenia>();
 		ArrayList<Kategorie> kategorie = new ArrayList<Kategorie>();
 		
-		//XML xml = new XML();
-		
 		dataManager dm = new dataManager(kontakty, wydarzenia,kategorie);
 		
 		dm.odczytajDane();
 		
-		consoleUI cui = new consoleUI(dm);
+		//consoleUI cui = new consoleUI(dm);
 		
 		//graphicUI gui = new graphicUI();
 		//cui.showCUI(sc);

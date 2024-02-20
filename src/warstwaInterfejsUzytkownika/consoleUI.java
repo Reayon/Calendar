@@ -5,7 +5,7 @@ import java.sql.SQLException;
 
 import java.util.Scanner;
 
-import warstwaLogiki.bufor;
+import javafx.scene.paint.Color;
 import warstwaLogiki.dataManager;
 
 public class consoleUI {
@@ -18,7 +18,6 @@ public class consoleUI {
 	
 	public void showCUI(Scanner sc) throws SQLException, FileNotFoundException{
 		Scanner sc1 = new Scanner(System.in);
-		Scanner skaner = new Scanner(System.in).useDelimiter("\n");;
 		
 		while(true)
 		{
@@ -95,7 +94,7 @@ public class consoleUI {
 			String data = sc.next();
 			System.out.println("Podaj godzine (h:min)");
 			String godzina = sc.next();
-			dm.addWydarzenie(nazwa, miejsce, data, godzina);
+			dm.addWydarzenie(nazwa, miejsce, data, godzina, Color.valueOf("0xffffffff"));
 			break;
 		case 6: 
 			System.out.println(dm.wyswietlWydarzenia());
@@ -110,7 +109,7 @@ public class consoleUI {
 			wybor1 = sc1.nextInt();
 			switch(wybor1) {
 			case 1:
-				System.out.println(dm.wyswietlKontakty());
+				System.out.println(dm.wyswietlWydarzenia());
 				System.out.println("Który wydarzenie chcesz zedytowac?");
 				wybor1 = sc1.nextInt();
 				System.out.println("Podaj nazwe wydarzenia");

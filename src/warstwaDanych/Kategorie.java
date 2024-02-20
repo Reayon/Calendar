@@ -16,7 +16,7 @@ public class Kategorie {
 		this.id = id;
 		this.nazwa = nazwa;
 	}
-
+	
 	public int getID() {
 		return id;
 	}

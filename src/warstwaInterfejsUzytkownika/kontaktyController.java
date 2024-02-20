@@ -114,15 +114,15 @@ public class kontaktyController extends kalendarzController {
         }
         tabelaKontaktow.setItems(listaKontaktow);
         });
-        tabelaKontaktow.setOnMouseClicked(event -> {
-            if (event.getClickCount() == 1) {
-                if (!tabelaKontaktow.getSelectionModel().isEmpty()) {
-                    Kontakt selectedKontakt = tabelaKontaktow.getSelectionModel().getSelectedItem();
-                    int kontaktID = selectedKontakt.getID();
-                    System.out.println("Wybrane ID: " + kontaktID);
-                }
-            }
-        });
+        //tabelaKontaktow.setOnMouseClicked(event -> {
+        //    if (event.getClickCount() == 1) {
+        //        if (!tabelaKontaktow.getSelectionModel().isEmpty()) {
+        //            Kontakt selectedKontakt = tabelaKontaktow.getSelectionModel().getSelectedItem();
+        //            int kontaktID = selectedKontakt.getID();
+        //            System.out.println("Wybrane ID: " + kontaktID);
+        //        }
+        //    }
+        //});
     }
         @FXML
         private void addKontakt() {
@@ -282,6 +282,7 @@ public class kontaktyController extends kalendarzController {
             if (selectedKontakt != null) {
                 Alert alert = new Alert(AlertType.CONFIRMATION);
                 Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+                stage.getIcons().add(new Image("calendar-icon.png"));
                 alert.setTitle("Potwierdzenie usunięcia");
                 alert.setHeaderText("Czy na pewno chcesz usunąć wybrany kontakt?");
                 alert.setContentText("Tej operacji nie można cofnąć.");

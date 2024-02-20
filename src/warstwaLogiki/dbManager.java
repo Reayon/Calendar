@@ -275,7 +275,7 @@ public class dbManager {
 	}
 	
 	public void usunKontaktZWydarzenia(int idk, int idw) throws SQLException{
-		String sql = "DELETE FROM assign WHERE ID_wydarzenia = '"+idw+" AND ID_kontaktu = '"+idk+"';\n";
+		String sql = "DELETE FROM assign WHERE ID_wydarzenia = '"+idw+"' AND ID_kontaktu = '"+idk+"';\n";
 		licznikZapytan++;
 		bufor.zapisZapytan(sql);
 	}
